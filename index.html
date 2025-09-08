@@ -6,6 +6,7 @@
 <title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;}
@@ -119,6 +120,7 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
                 <label>STBLKK: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
                 <label>Faktur BBM: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
                 <button type="button" class="btn-generate" onclick="generateAll(this)">Generate QR & Preview</button>
+                <button type="button" class="btn-generate" onclick="downloadAll(this)">⬇ Download Semua Dokumen + QR PDF</button>
               </form>
               <div class="result-container"></div>
             </div>
@@ -159,25 +161,19 @@ function generateAll(btn){
   const resultBox = form.nextElementSibling;
   resultBox.innerHTML = "";
 
+  // Ambil data form
+  const formData = new FormData(form);
   const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
   const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
   const time = form.querySelector('input[type="time"]').value || "00:00";
   const captain = form.querySelectorAll('input[type="text"]')[1].value || "KAPTEN";
   const gt = form.querySelectorAll('input[type="text"]')[2].value || "-";
-
+  
   const formattedDate = date.replace(/-/g,'');
   const formattedTime = time.replace(':','');
   const code = `SANDAR-${shipName.replace(/\s+/g,'')}-${formattedDate}-${formattedTime}`;
 
-  // ambil file PDF pertama
-  let fileURL = "";
-  form.querySelectorAll('input[type="file"]').forEach(fileInput=>{
-    if(fileInput.files[0] && fileInput.files[0].type.includes("pdf") && !fileURL){
-      fileURL = URL.createObjectURL(fileInput.files[0]);
-    }
-  });
-
-  // Ringkasan
+  // Buat ringkasan dokumen
   const summaryDiv = document.createElement("div");
   summaryDiv.className = "document-summary";
   summaryDiv.innerHTML = `
@@ -194,52 +190,77 @@ function generateAll(btn){
   `;
   resultBox.appendChild(summaryDiv);
 
-  // QR Code
+  // Buat QR Code
   const qrSection = document.createElement("div");
   qrSection.className = "qr-section";
-  qrSection.innerHTML = `<h3>🔲 QR Code Dokumen</h3><div id="qrcode-temp"></div>`;
+  qrSection.innerHTML = `<h3>🔲 QR Code Dokumen</h3>`;
+  
+  const qrDiv = document.createElement("div");
+  qrDiv.id = "qrcode-temp";
+  qrSection.appendChild(qrDiv);
   resultBox.appendChild(qrSection);
-
-  new QRCode(document.getElementById("qrcode-temp"), {
-    text: fileURL || code,
+  
+  // Generate QR dengan data lengkap
+  const qrData = JSON.stringify({
+    code: code,
+    ship: shipName,
+    date: date,
+    time: time,
+    captain: captain,
+    gt: gt,
+    timestamp: new Date().toISOString()
+  });
+  
+  new QRCode(qrDiv, {
+    text: qrData,
     width: 200,
     height: 200,
     colorDark: "#2c3e50",
     colorLight: "#ffffff"
   });
 
-  // Preview file
-  form.querySelectorAll('input[type="file"]').forEach((fileInput) => {
+  // Preview dokumen yang diupload
+  let docCount = 0;
+  form.querySelectorAll('input[type="file"]').forEach((fileInput, index) => {
     if(fileInput.files[0]){
+      docCount++;
       const file = fileInput.files[0];
       const label = fileInput.parentElement.textContent.split(':')[0];
+      
       const reader = new FileReader();
       reader.onload = function(e){
         const previewContainer = document.createElement("div");
         previewContainer.className="preview-container";
-
+        
+        // Info dokumen
         const docInfo = document.createElement("div");
         docInfo.className = "document-info";
         docInfo.innerHTML = `
           <h4>${label}</h4>
-          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB</p>
+          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB | 📅 ${new Date().toLocaleDateString('id-ID')}</p>
         `;
         previewContainer.appendChild(docInfo);
-
+        
+        // Preview file
         let previewEl;
         if(file.type.includes("pdf")){
           previewEl = document.createElement("embed");
           previewEl.src = e.target.result;
           previewEl.type = "application/pdf";
-        } else {
+        } else if(file.type.includes("image")){
           previewEl = document.createElement("img");
           previewEl.src = e.target.result;
+          previewEl.alt = file.name;
+        } else {
+          previewEl = document.createElement("div");
+          previewEl.innerHTML = `<p style="text-align:center;padding:50px;color:#7f8c8d;">📄 ${file.name}<br><small>Preview tidak tersedia untuk tipe file ini</small></p>`;
         }
         previewContainer.appendChild(previewEl);
 
+        // Download link
         const downloadLink = document.createElement("a");
         downloadLink.href = e.target.result;
-        downloadLink.download = file.name;
+        downloadLink.download = `${code}_${label}_${file.name}`;
         downloadLink.textContent = `⬇ Download ${label}`;
         previewContainer.appendChild(downloadLink);
 
@@ -248,9 +269,165 @@ function generateAll(btn){
       reader.readAsDataURL(file);
     }
   });
+  
+  if(docCount === 0){
+    alert("Silakan upload minimal satu dokumen!");
+  }
 }
 
-// default tanggal & jam
+async function downloadAll(btn){
+  const form = btn.closest("form");
+  const resultBox = form.nextElementSibling;
+  
+  if(!resultBox.innerHTML.trim()){
+    alert("Generate QR & Preview terlebih dahulu!");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  let yOffset = 20;
+  let pageHeight = 297;
+  let pageWidth = 210;
+  let margin = 20;
+  
+  // Ambil data dari form
+  const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
+  const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+  const time = form.querySelector('input[type="time"]').value || "00:00";
+  const captain = form.querySelectorAll('input[type="text"]')[1].value || "KAPTEN";
+  const gt = form.querySelectorAll('input[type="text"]')[2].value || "-";
+  
+  function checkAndAddPage(neededHeight) {
+    if (yOffset + neededHeight > pageHeight - 30) {
+      pdf.addPage();
+      yOffset = 20;
+      return true;
+    }
+    return false;
+  }
+  
+  // Header PDF
+  pdf.setFontSize(18);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('SANDAR-RATU', pageWidth/2, yOffset, { align: 'center' });
+  yOffset += 8;
+  
+  pdf.setFontSize(12);
+  pdf.text('Sistem Administrasi & Dokumen Kesyahbandaran', pageWidth/2, yOffset, { align: 'center' });
+  yOffset += 5;
+  pdf.text('PPN Palabuhanratu', pageWidth/2, yOffset, { align: 'center' });
+  yOffset += 20;
+  
+  // Info dokumen
+  pdf.setDrawColor(100);
+  pdf.setFillColor(245, 245, 245);
+  pdf.roundedRect(margin, yOffset, pageWidth - 2*margin, 40, 3, 3, 'FD');
+  
+  yOffset += 10;
+  pdf.setFontSize(12);
+  pdf.setFont(undefined, 'bold');
+  pdf.setTextColor(0);
+  pdf.text('INFORMASI DOKUMEN', margin + 10, yOffset);
+  yOffset += 8;
+  
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text('Nama Kapal: ' + shipName, margin + 10, yOffset);
+  pdf.text('GT: ' + gt, margin + 100, yOffset);
+  yOffset += 6;
+  pdf.text('Tanggal: ' + new Date(date).toLocaleDateString('id-ID'), margin + 10, yOffset);
+  pdf.text('Waktu: ' + time, margin + 100, yOffset);
+  yOffset += 6;
+  pdf.text('Kapten: ' + captain, margin + 10, yOffset);
+  yOffset += 20;
+
+  // QR Code
+  const qrDiv = resultBox.querySelector('#qrcode-temp');
+  if(qrDiv){
+    const canvas = qrDiv.querySelector('canvas');
+    if(canvas){
+      checkAndAddPage(50);
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('QR CODE DOKUMEN', pageWidth/2, yOffset, { align: 'center' });
+      yOffset += 10;
+      
+      const imgData = canvas.toDataURL('image/png');
+      const qrSize = 40;
+      pdf.addImage(imgData, 'PNG', (pageWidth-qrSize)/2, yOffset, qrSize, qrSize);
+      yOffset += qrSize + 20;
+    }
+  }
+
+  // Daftar Dokumen
+  checkAndAddPage(20);
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, 'bold');
+  pdf.text('DOKUMEN TERLAMPIR:', margin, yOffset);
+  yOffset += 15;
+  
+  let docNumber = 1;
+  const fileInputs = form.querySelectorAll('input[type="file"]');
+  
+  fileInputs.forEach((fileInput) => {
+    if(fileInput.files[0]){
+      const file = fileInput.files[0];
+      const label = fileInput.parentElement.textContent.split(':')[0];
+      
+      checkAndAddPage(25);
+      
+      // Info dokumen
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(docNumber + '. ' + label, margin, yOffset);
+      yOffset += 6;
+      
+      pdf.setFontSize(9);
+      pdf.setFont(undefined, 'normal');
+      const fileInfo = file.name + ' | ' + (file.size/1024).toFixed(2) + ' KB';
+      pdf.text(fileInfo, margin + 10, yOffset);
+      yOffset += 8;
+      
+      // Box untuk preview
+      pdf.setDrawColor(200);
+      pdf.setFillColor(250, 250, 250);
+      pdf.roundedRect(margin + 10, yOffset, pageWidth - 2*margin - 20, 15, 2, 2, 'FD');
+      
+      if(file.type.includes('pdf')){
+        pdf.text('Dokumen PDF - ' + file.name, margin + 15, yOffset + 10);
+      } else if(file.type.includes('image')){
+        pdf.text('Gambar - ' + file.name, margin + 15, yOffset + 10);
+      } else {
+        pdf.text('File - ' + file.name, margin + 15, yOffset + 10);
+      }
+      
+      yOffset += 20;
+      docNumber++;
+    }
+  });
+  
+  // Footer
+  const totalPages = pdf.internal.getNumberOfPages();
+  for(let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(8);
+    pdf.setTextColor(100);
+    
+    const footerY = pageHeight - 15;
+    pdf.text('SANDAR-RATU © 2025', margin, footerY);
+    pdf.text('Halaman ' + i + ' dari ' + totalPages, pageWidth/2, footerY, { align: 'center' });
+    pdf.text('Dicetak: ' + new Date().toLocaleDateString('id-ID'), pageWidth - margin, footerY, { align: 'right' });
+  }
+  
+  // Save PDF
+  const fileName = 'SANDAR_RATU_' + shipName.replace(/\s+/g,'_') + '_' + date.replace(/-/g,'') + '.pdf';
+  pdf.save(fileName);
+  
+  alert('Dokumen PDF berhasil di-download: ' + fileName + '\nJumlah dokumen: ' + (docNumber-1));
+}
+
+// Set tanggal hari ini sebagai default
 document.addEventListener("DOMContentLoaded",()=>{
   const today = new Date().toISOString().split("T")[0];
   const now = new Date().toTimeString().slice(0,5);

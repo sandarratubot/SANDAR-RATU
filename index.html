@@ -2,13 +2,13 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Upload PDF ke Google Drive + QR Code</title>
+<title>Upload PDF ke Folder Google Drive + QR Code</title>
 <script src="https://apis.google.com/js/api.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body onload="handleClientLoad()">
 
-<h2>Upload PDF → Google Drive → QR Code</h2>
+<h2>Upload PDF → Folder Google Drive → QR Code</h2>
 
 <input type="file" id="pdfFile" accept="application/pdf" />
 <button onclick="handleGenerate()">Upload & Generate QR</button>
@@ -22,6 +22,7 @@
 const CLIENT_ID = "800620913330-i15l4t61k2ob1gk03rkoc4kt4aavfe1u.apps.googleusercontent.com";
 const API_KEY   = "AIzaSyCLNPyapUhAQyM2Cagi1Nx-2GBUU8loglM";
 const SCOPES    = "https://www.googleapis.com/auth/drive.file";
+const FOLDER_ID = "1Lae_BnoyOBE8qVmw1BGjZde8EHs1qsla"; // ID Folder tujuan
 
 // Load client library
 function handleClientLoad() {
@@ -35,7 +36,7 @@ function initClient() {
     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
     scope: SCOPES
   }).then(() => {
-    document.getElementById("status").innerText = "✅ Google API siap, silakan pilih file PDF.";
+    document.getElementById("status").innerText = "✅ Google API siap, pilih file PDF.";
   }).catch(err => {
     document.getElementById("status").innerText = "❌ Error init: " + err.message;
   });
@@ -51,7 +52,11 @@ async function uploadFileToDrive(file) {
 
   const accessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
 
-  const metadata = { name: file.name, mimeType: file.type };
+  const metadata = {
+    name: file.name,
+    mimeType: file.type,
+    parents: [FOLDER_ID] // masukkan ke folder tujuan
+  };
 
   const form = new FormData();
   form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
@@ -69,6 +74,20 @@ async function uploadFileToDrive(file) {
   return res.json(); // { id: "xxxxx" }
 }
 
+async function makeFilePublic(fileId, accessToken) {
+  await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + accessToken,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      role: "reader",
+      type: "anyone"
+    })
+  });
+}
+
 async function handleGenerate() {
   const fileInput = document.getElementById("pdfFile");
   if (fileInput.files.length === 0) {
@@ -80,11 +99,17 @@ async function handleGenerate() {
   document.getElementById("status").innerText = "⏳ Uploading ke Google Drive...";
 
   try {
+    const GoogleAuth = gapi.auth2.getAuthInstance();
+    const accessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
+
     const data = await uploadFileToDrive(file);
 
     if (!data.id) {
       throw new Error("Upload gagal: " + JSON.stringify(data));
     }
+
+    // bikin public biar bisa diakses siapa saja
+    await makeFilePublic(data.id, accessToken);
 
     // Link langsung
     const link = `https://drive.google.com/uc?id=${data.id}`;

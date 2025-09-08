@@ -1,233 +1,263 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    * {margin:0;padding:0;box-sizing:border-box;}
-    body {font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;}
-    
-    /* LOGIN */
-    .login-container{background:#fff;padding:40px;border-radius:15px;width:100%;max-width:420px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.15);}
-    .logo{width:80px;height:80px;margin:0 auto 15px;}
-    .login-title{font-size:22px;font-weight:600;margin-bottom:10px;color:#2c3e50;}
-    .subtitle{font-size:14px;color:#7f8c8d;margin-bottom:25px;}
-    .form-control{width:100%;padding:12px;margin-bottom:15px;border:1px solid #ddd;border-radius:8px;}
-    .btn-login{width:100%;padding:12px;border:none;border-radius:8px;background:#3498db;color:#fff;font-weight:bold;cursor:pointer;}
-    .btn-login:hover{background:#2980b9;}
-    .footer{font-size:12px;color:#7f8c8d;margin-top:20px;}
-
-    /* DASHBOARD */
-    .dashboard{display:none;flex-direction:column;height:100vh;width:100%;}
-    .header{background:#2c3e50;color:white;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;}
-    .header .logo-icon{background:#3498db;width:36px;height:36px;border-radius:8px;display:flex;justify-content:center;align-items:center;margin-right:10px;}
-    .main-container{display:flex;flex:1;}
-    .sidebar{width:240px;background:#3498db;color:white;padding-top:20px;}
-    .sidebar div{padding:8px 20px;font-weight:600;opacity:0.8;font-size:13px;}
-    .sidebar a{display:flex;align-items:center;padding:12px 20px;color:white;text-decoration:none;transition:0.3s;cursor:pointer;}
-    .sidebar a:hover{background:rgba(255,255,255,0.1);}
-    .sidebar a.active{background:rgba(0,0,0,0.25);font-weight:bold;}
-    .content{flex:1;padding:25px;overflow-y:auto;background:#f5f5f5;}
-    .content h2{margin-bottom:20px;color:#2c3e50;}
-
-    /* CARD */
-    .card{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-    .form-row{display:flex;gap:15px;margin-bottom:15px;}
-    .form-row .form-control{flex:1;}
-    .btn-generate{width:100%;padding:12px;background:#2ecc71;border:none;color:white;border-radius:8px;font-weight:600;}
-    .btn-generate:hover{background:#27ae60;}
-    .barcode-result{display:none;margin-top:15px;padding:15px;background:#f9f9f9;border-radius:8px;text-align:center;}
-    .barcode-result a{display:block;margin-top:10px;color:#3498db;font-weight:600;text-decoration:none;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;}
+.login-container{background:#fff;padding:40px;border-radius:15px;width:100%;max-width:420px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+.logo{width:80px;height:80px;margin:0 auto 15px;}
+.login-title{font-size:22px;font-weight:600;margin-bottom:10px;color:#2c3e50;}
+.subtitle{font-size:14px;color:#7f8c8d;margin-bottom:25px;}
+.form-control{width:100%;padding:12px;margin-bottom:15px;border:1px solid #ddd;border-radius:8px;}
+.btn-login{width:100%;padding:12px;border:none;border-radius:8px;background:#3498db;color:#fff;font-weight:bold;cursor:pointer;}
+.btn-login:hover{background:#2980b9;}
+.footer{font-size:12px;color:#7f8c8d;margin-top:20px;}
+.dashboard{display:none;flex-direction:column;height:100vh;width:100%;}
+.header{background:#2c3e50;color:white;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;}
+.header .logo-icon{background:#3498db;width:36px;height:36px;border-radius:8px;display:flex;justify-content:center;align-items:center;margin-right:10px;}
+.main-container{display:flex;flex:1;}
+.sidebar{width:240px;background:#3498db;color:white;padding-top:20px;}
+.sidebar div{padding:8px 20px;font-weight:600;opacity:0.8;font-size:13px;}
+.sidebar a{display:flex;align-items:center;padding:12px 20px;color:white;text-decoration:none;transition:0.3s;cursor:pointer;}
+.sidebar a:hover{background:rgba(255,255,255,0.1);}
+.sidebar a.active{background:rgba(0,0,0,0.25);font-weight:bold;}
+.content{flex:1;padding:25px;overflow-y:auto;background:#f5f5f5;}
+.content h2{margin-bottom:20px;color:#2c3e50;}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.form-row{display:flex;gap:15px;margin-bottom:15px;}
+.form-row .form-control{flex:1;}
+.btn-generate{width:100%;padding:12px;background:#2ecc71;border:none;color:white;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.btn-generate:hover{background:#27ae60;}
+.result-container{margin-top:15px;}
+.preview-container{margin-top:8px;padding:15px;background:#fafafa;border:1px solid #ddd;border-radius:6px;display:flex;flex-direction:column;gap:10px;}
+.preview-container .document-info{background:#fff;padding:10px;border-radius:5px;border-left:4px solid #3498db;}
+.preview-container .document-info h4{color:#2c3e50;margin-bottom:5px;}
+.preview-container .document-info p{color:#7f8c8d;font-size:12px;}
+.preview-container embed,.preview-container img{width:100%;max-height:300px;border-radius:6px;object-fit:contain;border:1px solid #ddd;}
+.preview-container a{align-self:flex-start;text-decoration:none;color:#2980b9;font-weight:bold;padding:5px 10px;background:#ecf0f1;border-radius:4px;}
+.qr-section{background:#fff;padding:15px;border-radius:8px;text-align:center;border:2px solid #3498db;margin-bottom:15px;}
+.qr-section h3{color:#2c3e50;margin-bottom:10px;}
+.document-summary{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;border-left:4px solid #27ae60;}
+.document-summary h3{color:#2c3e50;margin-bottom:10px;}
+.document-summary table{width:100%;border-collapse:collapse;}
+.document-summary table td{padding:5px;border-bottom:1px solid #ecf0f1;}
+.document-summary table td:first-child{font-weight:bold;width:30%;}
+</style>
 </head>
 <body>
-  <!-- LOGIN -->
-  <div id="loginPage" class="login-container">
-    <div class="logo"><i class="fas fa-anchor fa-3x" style="color:#3498db;"></i></div>
-    <h2 class="login-title">SANDAR-RATU</h2>
-    <p class="subtitle">📋 Sistem Administrasi & Dokumen<br>Kesyahbandaran PPN Palabuhanratu</p>
-    <form id="loginForm">
-      <input type="text" id="username" class="form-control" placeholder="Nama Pengguna / Email" required>
-      <input type="password" id="password" class="form-control" placeholder="Kata Sandi" required>
-      <button type="submit" class="btn-login">Masuk</button>
-    </form>
-    <div class="footer">Hak Cipta © 2025 Sandar-Ratu</div>
-  </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="dashboard">
-    <div class="header">
-      <div style="display:flex;align-items:center;">
-        <div class="logo-icon"><i class="fas fa-anchor"></i></div>
-        <strong>SANDAR-RATU</strong>
-      </div>
-      <button onclick="logout()" style="background:#e74c3c;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Keluar</button>
+<!-- LOGIN -->
+<div id="loginPage" class="login-container">
+  <div class="logo"><i class="fas fa-anchor fa-3x" style="color:#3498db;"></i></div>
+  <h2 class="login-title">SANDAR-RATU</h2>
+  <p class="subtitle">📋 Sistem Administrasi & Dokumen<br>Kesyahbandaran PPN Palabuhanratu</p>
+  <form id="loginForm">
+    <input type="text" id="username" class="form-control" placeholder="Nama Pengguna / Email" required>
+    <input type="password" id="password" class="form-control" placeholder="Kata Sandi" required>
+    <button type="submit" class="btn-login">Masuk</button>
+  </form>
+  <div class="footer">Hak Cipta © 2025 Sandar-Ratu</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard">
+  <div class="header">
+    <div style="display:flex;align-items:center;">
+      <div class="logo-icon"><i class="fas fa-anchor"></i></div>
+      <strong>SANDAR-RATU</strong>
     </div>
-    <div class="main-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div>👨‍✈️ Petugas</div>
-        <a onclick="showPage('departurePetugas', this)"><i class="fas fa-anchor"></i>&nbsp; Keberangkatan</a>
-        <a onclick="showPage('arrivalPetugas', this)"><i class="fas fa-ship"></i>&nbsp; Kedatangan</a>
+    <button onclick="logout()" style="background:#e74c3c;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Keluar</button>
+  </div>
+  <div class="main-container">
+    <div class="sidebar">
+      <div>👨‍✈️ Petugas</div>
+      <a onclick="showPage('departurePetugas', this)"><i class="fas fa-anchor"></i>&nbsp; Keberangkatan</a>
+      <a onclick="showPage('arrivalPetugas', this)"><i class="fas fa-ship"></i>&nbsp; Kedatangan</a>
+      <div>🚢 Nelayan</div>
+      <a onclick="showPage('departureNelayan', this)"><i class="fas fa-fish"></i>&nbsp; Keberangkatan</a>
+      <a onclick="showPage('arrivalNelayan', this)"><i class="fas fa-water"></i>&nbsp; Kedatangan</a>
+    </div>
 
-        <div>🚢 Nelayan</div>
-        <a onclick="showPage('departureNelayan', this)"><i class="fas fa-fish"></i>&nbsp; Keberangkatan</a>
-        <a onclick="showPage('arrivalNelayan', this)"><i class="fas fa-water"></i>&nbsp; Kedatangan</a>
-      </div>
-
-      <!-- Content -->
-      <div class="content">
-        
-        <!-- PETUGAS: Keberangkatan -->
-        <div id="departurePetugas" class="content-page">
-          <h2>⚓ Petugas - Keberangkatan</h2>
-          <div class="card">
-            <form class="formGenerate">
-              <input type="text" class="form-control" placeholder="Nama Kapal" required>
-              <div class="form-row">
-                <input type="date" class="form-control" required>
-                <input type="time" class="form-control" required>
-              </div>
-              <input type="text" class="form-control" placeholder="Kapten Kapal" required>
-              <button class="btn-generate" type="submit">Generate QR Code</button>
-            </form>
-            <div class="barcode-result">
-              <h4>QR Code Dokumen</h4>
-              <div class="qrcode"></div>
-              <a href="#" target="_blank">🔗 Unduh Dokumen</a>
+    <div class="content">
+      <script>
+        const menu = [
+          {id:'departurePetugas', title:'⚓ Petugas - Keberangkatan'},
+          {id:'arrivalPetugas', title:'⚓ Petugas - Kedatangan'},
+          {id:'departureNelayan', title:'🚢 Nelayan - Keberangkatan'},
+          {id:'arrivalNelayan', title:'🚢 Nelayan - Kedatangan'}
+        ];
+        menu.forEach(m=>{
+          const div = document.createElement('div');
+          div.id = m.id;
+          div.className = 'content-page';
+          if(m.id!=='departurePetugas') div.style.display='none';
+          div.innerHTML = `
+            <h2>${m.title}</h2>
+            <div class="card">
+              <form>
+                <input type="text" class="form-control" placeholder="Nama Kapal" required>
+                <div class="form-row">
+                  <input type="date" class="form-control" required>
+                  <input type="time" class="form-control" required>
+                </div>
+                <input type="text" class="form-control" placeholder="Kapten Kapal" required>
+                <input type="text" class="form-control" placeholder="GT (Opsional)">
+                <h4 style="margin:15px 0 10px;color:#2c3e50;">📎 Upload Dokumen</h4>
+                <label>SPB: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Crew List: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Perbekalan: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>SLO: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Pernyataan Nahkoda: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Kwitansi Tambat Labuh: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Permohonan Penerbitan SPB: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Daftar ABK: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>STBLKK: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <label>Faktur BBM: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                <button type="button" class="btn-generate" onclick="generateAll(this)">Generate QR & Preview</button>
+              </form>
+              <div class="result-container"></div>
             </div>
-          </div>
-        </div>
-
-        <!-- PETUGAS: Kedatangan -->
-        <div id="arrivalPetugas" class="content-page" style="display:none;">
-          <h2>⚓ Petugas - Kedatangan</h2>
-          <div class="card">
-            <form class="formGenerate">
-              <input type="text" class="form-control" placeholder="Nama Kapal" required>
-              <div class="form-row">
-                <input type="date" class="form-control" required>
-                <input type="time" class="form-control" required>
-              </div>
-              <input type="text" class="form-control" placeholder="Kapten Kapal" required>
-              <button class="btn-generate" type="submit">Generate QR Code</button>
-            </form>
-            <div class="barcode-result">
-              <h4>QR Code Dokumen</h4>
-              <div class="qrcode"></div>
-              <a href="#" target="_blank">🔗 Unduh Dokumen</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- NELAYAN: Keberangkatan -->
-        <div id="departureNelayan" class="content-page" style="display:none;">
-          <h2>🚢 Nelayan - Keberangkatan</h2>
-          <div class="card">
-            <form class="formGenerate">
-              <input type="text" class="form-control" placeholder="Nama Kapal" required>
-              <div class="form-row">
-                <input type="date" class="form-control" required>
-                <input type="time" class="form-control" required>
-              </div>
-              <input type="text" class="form-control" placeholder="Kapten Kapal" required>
-              <button class="btn-generate" type="submit">Generate QR Code</button>
-            </form>
-            <div class="barcode-result">
-              <h4>QR Code Dokumen</h4>
-              <div class="qrcode"></div>
-              <a href="#" target="_blank">🔗 Unduh Dokumen</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- NELAYAN: Kedatangan -->
-        <div id="arrivalNelayan" class="content-page" style="display:none;">
-          <h2>🚢 Nelayan - Kedatangan</h2>
-          <div class="card">
-            <form class="formGenerate">
-              <input type="text" class="form-control" placeholder="Nama Kapal" required>
-              <div class="form-row">
-                <input type="date" class="form-control" required>
-                <input type="time" class="form-control" required>
-              </div>
-              <input type="text" class="form-control" placeholder="Kapten Kapal" required>
-              <button class="btn-generate" type="submit">Generate QR Code</button>
-            </form>
-            <div class="barcode-result">
-              <h4>QR Code Dokumen</h4>
-              <div class="qrcode"></div>
-              <a href="#" target="_blank">🔗 Unduh Dokumen</a>
-            </div>
-          </div>
-        </div>
-
-      </div>
+          `;
+          document.querySelector('.content').appendChild(div);
+        });
+      </script>
     </div>
   </div>
+</div>
 
 <script>
-  // LOGIN
-  document.getElementById("loginForm").addEventListener("submit",function(e){
-    e.preventDefault();
-    if(document.getElementById("username").value && document.getElementById("password").value){
-      document.getElementById("loginPage").style.display="none";
-      document.getElementById("dashboard").style.display="flex";
-      document.body.style.background="white";
-      showPage('departurePetugas', document.querySelector(".sidebar a"));
-    } else { alert("Isi username & password!"); }
+document.getElementById("loginForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  if(document.getElementById("username").value && document.getElementById("password").value){
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("dashboard").style.display="flex";
+    document.body.style.background="white";
+    showPage('departurePetugas', document.querySelector(".sidebar a"));
+  } else { alert("Isi username & password!"); }
+});
+
+function logout(){
+  document.getElementById("dashboard").style.display="none";
+  document.getElementById("loginPage").style.display="block";
+  document.body.style.background="linear-gradient(135deg,#667eea,#764ba2)";
+}
+
+function showPage(pageId, el){
+  document.querySelectorAll(".content-page").forEach(p=>p.style.display="none");
+  document.getElementById(pageId).style.display="block";
+  document.querySelectorAll(".sidebar a").forEach(a=>a.classList.remove("active"));
+  if(el){ el.classList.add("active"); }
+}
+
+function generateAll(btn){
+  const form = btn.closest("form");
+  const resultBox = form.nextElementSibling;
+  resultBox.innerHTML = "";
+
+  const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
+  const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+  const time = form.querySelector('input[type="time"]').value || "00:00";
+  const captain = form.querySelectorAll('input[type="text"]')[1].value || "KAPTEN";
+  const gt = form.querySelectorAll('input[type="text"]')[2].value || "-";
+
+  const formattedDate = date.replace(/-/g,'');
+  const formattedTime = time.replace(':','');
+  const code = `SANDAR-${shipName.replace(/\s+/g,'')}-${formattedDate}-${formattedTime}`;
+
+  // ambil file PDF pertama
+  let fileURL = "";
+  form.querySelectorAll('input[type="file"]').forEach(fileInput=>{
+    if(fileInput.files[0] && fileInput.files[0].type.includes("pdf") && !fileURL){
+      fileURL = URL.createObjectURL(fileInput.files[0]);
+    }
   });
 
-  function logout(){
-    document.getElementById("dashboard").style.display="none";
-    document.getElementById("loginPage").style.display="block";
-    document.body.style.background="linear-gradient(135deg,#667eea,#764ba2)";
-  }
+  // Ringkasan
+  const summaryDiv = document.createElement("div");
+  summaryDiv.className = "document-summary";
+  summaryDiv.innerHTML = `
+    <h3>📋 Ringkasan Dokumen</h3>
+    <table>
+      <tr><td>Nama Kapal:</td><td>${shipName}</td></tr>
+      <tr><td>Tanggal:</td><td>${new Date(date).toLocaleDateString('id-ID')}</td></tr>
+      <tr><td>Waktu:</td><td>${time}</td></tr>
+      <tr><td>Kapten:</td><td>${captain}</td></tr>
+      <tr><td>GT:</td><td>${gt}</td></tr>
+      <tr><td>Kode Dokumen:</td><td><strong>${code}</strong></td></tr>
+      <tr><td>Dibuat:</td><td>${new Date().toLocaleString('id-ID')}</td></tr>
+    </table>
+  `;
+  resultBox.appendChild(summaryDiv);
 
-  // SWITCH PAGE
-  function showPage(pageId, el){
-    document.querySelectorAll(".content-page").forEach(p=>p.style.display="none");
-    document.getElementById(pageId).style.display="block";
-    document.querySelectorAll(".sidebar a").forEach(a=>a.classList.remove("active"));
-    if(el){ el.classList.add("active"); }
-  }
+  // QR Code
+  const qrSection = document.createElement("div");
+  qrSection.className = "qr-section";
+  qrSection.innerHTML = `<h3>🔲 QR Code Dokumen</h3><div id="qrcode-temp"></div>`;
+  resultBox.appendChild(qrSection);
 
-  // Generate QR Code (semua form)
-  document.querySelectorAll(".formGenerate").forEach((form, idx)=>{
-    form.addEventListener("submit",function(e){
-      e.preventDefault();
-      const date=this.querySelector('input[type="date"]').value;
-      const time=this.querySelector('input[type="time"]').value;
-      const ship=this.querySelector('input[type="text"]').value;
-      const code=`FORM-${idx+1}-${ship}-${date.replace(/-/g,"")}-${time.replace(":","")}`;
-      const downloadLink=`https://example.com/download/${code}.pdf`; // URL unduhan
-
-      const result=this.parentElement.querySelector(".barcode-result");
-      const qrContainer=result.querySelector(".qrcode");
-      const previewLink=result.querySelector("a");
-
-      qrContainer.innerHTML=""; // reset
-      new QRCode(qrContainer,{
-        text: downloadLink,
-        width:180,
-        height:180
-      });
-
-      previewLink.href=downloadLink;
-      previewLink.textContent=`🔗 Preview / Unduh (${code})`;
-
-      result.style.display="block";
-    });
+  new QRCode(document.getElementById("qrcode-temp"), {
+    text: fileURL || code,
+    width: 200,
+    height: 200,
+    colorDark: "#2c3e50",
+    colorLight: "#ffffff"
   });
 
-  // Set default date today
-  document.addEventListener("DOMContentLoaded",()=>{
-    const today=new Date().toISOString().split("T")[0];
-    document.querySelectorAll('input[type="date"]').forEach(i=>i.value=today);
+  // Preview file
+  form.querySelectorAll('input[type="file"]').forEach((fileInput) => {
+    if(fileInput.files[0]){
+      const file = fileInput.files[0];
+      const label = fileInput.parentElement.textContent.split(':')[0];
+      const reader = new FileReader();
+      reader.onload = function(e){
+        const previewContainer = document.createElement("div");
+        previewContainer.className="preview-container";
+
+        const docInfo = document.createElement("div");
+        docInfo.className = "document-info";
+        docInfo.innerHTML = `
+          <h4>${label}</h4>
+          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB</p>
+        `;
+        previewContainer.appendChild(docInfo);
+
+        let previewEl;
+        if(file.type.includes("pdf")){
+          previewEl = document.createElement("embed");
+          previewEl.src = e.target.result;
+          previewEl.type = "application/pdf";
+        } else {
+          previewEl = document.createElement("img");
+          previewEl.src = e.target.result;
+        }
+        previewContainer.appendChild(previewEl);
+
+        const downloadLink = document.createElement("a");
+        downloadLink.href = e.target.result;
+        downloadLink.download = file.name;
+        downloadLink.textContent = `⬇ Download ${label}`;
+        previewContainer.appendChild(downloadLink);
+
+        resultBox.appendChild(previewContainer);
+      };
+      reader.readAsDataURL(file);
+    }
   });
+}
+
+// default tanggal & jam
+document.addEventListener("DOMContentLoaded",()=>{
+  const today = new Date().toISOString().split("T")[0];
+  const now = new Date().toTimeString().slice(0,5);
+  document.querySelectorAll('input[type="date"]').forEach(i=>i.value=today);
+  document.querySelectorAll('input[type="time"]').forEach(i=>i.value=now);
+});
 </script>
+
 </body>
 </html>

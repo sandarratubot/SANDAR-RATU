@@ -63,7 +63,7 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
 .verification-content{padding:30px;}
 .verification-status{text-align:center;margin-bottom:30px;}
 .status-valid{color:#27ae60;background:#d5f4e6;border:2px solid #27ae60;padding:15px;border-radius:8px;}
-.status-invalid{color:#e74c3c;background:#fdf2f2;border:2px solid:#e74c3c;padding:15px;border-radius:8px;}
+.status-invalid{color:#e74c3c;background:#fdf2f2;border:2px solid #e74c3c;padding:15px;border-radius:8px;}
 .document-details{background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0;}
 .document-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:20px;}
 .document-item{background:#fff;border:1px solid #ddd;border-radius:8px;padding:15px;}
@@ -144,6 +144,8 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
       <a onclick="showPage('departureNelayan', this)"><i class="fas fa-fish"></i>&nbsp; Keberangkatan</a>
       <a onclick="showPage('arrivalNelayan', this)"><i class="fas fa-water"></i>&nbsp; Kedatangan</a>
       <a onclick="showPage('storageNelayan', this)"><i class="fas fa-archive"></i>&nbsp; Arsip Dokumen</a>
+      <div>Document Storage</div>
+      <a onclick="showPage('docStorageSystem', this)"><i class="fas fa-folder-open"></i>&nbsp; Document Storage</a>
     </div>
 
     <div class="content">
@@ -160,7 +162,8 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
           {id:'storagePetugas', title:'📁 Arsip Dokumen Petugas', type: 'storage', category: 'Petugas'},
           {id:'departureNelayan', title:'🚢 Nelayan - Keberangkatan', type: 'departure', category: 'Nelayan'},
           {id:'arrivalNelayan', title:'🚢 Nelayan - Kedatangan', type: 'arrival', category: 'Nelayan'},
-          {id:'storageNelayan', title:'📁 Arsip Dokumen Nelayan', type: 'storage', category: 'Nelayan'}
+          {id:'storageNelayan', title:'📁 Arsip Dokumen Nelayan', type: 'storage', category: 'Nelayan'},
+          {id:'docStorageSystem', title:'📁 Document Storage & Archive System', type:'storage', category:'System'}
         ];
 
         // Dokumen untuk petugas keberangkatan
@@ -399,16 +402,27 @@ function showVerificationPage(urlParams) {
   }
 }
 
-document.getElementById("loginForm").addEventListener("submit",function(e){
+document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
-  if(document.getElementById("username").value && document.getElementById("password").value){
-    document.getElementById("loginPage").style.display="none";
-    document.getElementById("dashboard").style.display="flex";
-    document.body.style.background="white";
-    showPage('departurePetugas', document.querySelector(".sidebar a"));
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (username && password) {
+    // Sembunyikan login, tampilkan dashboard
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "flex";
+    document.body.style.background = "white";
+
+    // Langsung buka halaman Document Storage & Archive System
+    showPage('docStorageSystem', document.querySelector(".sidebar a[onclick*=\"docStorageSystem\"]"));
+
+    // Load data arsip
     loadStorageData();
-  } else { alert("Isi username & password!"); }
+  } else {
+    alert("Isi username & password!");
+  }
 });
+
 
 function logout(){
   document.getElementById("dashboard").style.display="none";

@@ -235,6 +235,11 @@ function initializePages() {
   document.querySelectorAll('input[type="time"]').forEach(input => {
     input.value = now;
   });
+  
+  // Add Google Drive buttons after forms are created
+  setTimeout(() => {
+    addGoogleDriveButton();
+  }, 100);
 }
 
 // Generate QR and preview

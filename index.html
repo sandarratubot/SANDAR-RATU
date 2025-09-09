@@ -457,22 +457,19 @@ async function downloadAll(btn){
       pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
       pdf.text('QR CODE VERIFIKASI DOKUMEN', pageWidth/2, yOffset, { align: 'center' });
-      yOffset += 10;
+      yOffset += 5;
       
       const imgData = canvas.toDataURL('image/png');
       const qrSize = 50;
       pdf.addImage(imgData, 'PNG', (pageWidth-qrSize)/2, yOffset, qrSize, qrSize);
-      yOffset += qrSize + 10;
+      yOffset += qrSize + 5;
       
       // Tambahkan URL QR di PDF
       const qrUrl = resultBox.querySelector('.qr-url').textContent;
       pdf.setFontSize(8);
       pdf.setFont(undefined, 'normal');
-      pdf.text('Scan QR atau kunjungi:', pageWidth/2, yOffset, { align: 'center' });
+      pdf.text('Scan QR', pageWidth/2, yOffset, { align: 'center' });
       yOffset += 5;
-      pdf.setFontSize(6);
-      pdf.text(qrUrl, pageWidth/2, yOffset, { align: 'center' });
-      yOffset += 10;
     }
   }
 

@@ -43,11 +43,18 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
 .preview-container a{align-self:flex-start;text-decoration:none;color:#2980b9;font-weight:bold;padding:5px 10px;background:#ecf0f1;border-radius:4px;}
 .qr-section{background:#fff;padding:15px;border-radius:8px;text-align:center;border:2px solid #3498db;margin-bottom:15px;}
 .qr-section h3{color:#2c3e50;margin-bottom:10px;}
+.qr-info{background:#e8f6ff;padding:10px;border-radius:6px;margin-top:10px;border:1px solid #3498db;}
+.qr-info p{margin:3px 0;font-size:12px;color:#2c3e50;}
+.qr-info .qr-url{background:#fff;padding:8px;margin:5px 0;border-radius:4px;word-break:break-all;font-family:monospace;font-size:13px;border:1px solid #bdc3c7;max-height:60px;overflow-y:auto;}
 .document-summary{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;border-left:4px solid #27ae60;}
 .document-summary h3{color:#2c3e50;margin-bottom:10px;}
 .document-summary table{width:100%;border-collapse:collapse;}
 .document-summary table td{padding:5px;border-bottom:1px solid #ecf0f1;}
 .document-summary table td:first-child{font-weight:bold;width:30%;}
+.form-type-indicator{background:#e8f4f8;border:2px solid #3498db;padding:10px;border-radius:8px;margin-bottom:15px;text-align:center;}
+.form-type-indicator h3{color:#2c3e50;margin:0;}
+.test-qr-btn{background:#e74c3c;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;margin:5px;font-size:12px;}
+.test-qr-btn:hover{background:#c0392b;}
 </style>
 </head>
 <body>
@@ -87,20 +94,70 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
     <div class="content">
       <script>
         const menu = [
-          {id:'departurePetugas', title:'⚓ Petugas - Keberangkatan'},
-          {id:'arrivalPetugas', title:'⚓ Petugas - Kedatangan'},
-          {id:'departureNelayan', title:'🚢 Nelayan - Keberangkatan'},
-          {id:'arrivalNelayan', title:'🚢 Nelayan - Kedatangan'}
+          {id:'departurePetugas', title:'⚓ Petugas - Keberangkatan', type: 'departure', category: 'Petugas'},
+          {id:'arrivalPetugas', title:'⚓ Petugas - Kedatangan', type: 'arrival', category: 'Petugas'},
+          {id:'departureNelayan', title:'🚢 Nelayan - Keberangkatan', type: 'departure', category: 'Nelayan'},
+          {id:'arrivalNelayan', title:'🚢 Nelayan - Kedatangan', type: 'arrival', category: 'Nelayan'}
         ];
+
+        // Dokumen untuk petugas keberangkatan
+        const departurePetugasDocuments = [
+          'SPB',
+          'Crew List', 
+          'Perbekalan',
+          'SLO',
+          'Pernyataan Nahkoda',
+          'Kwitansi Tambat Labuh',
+          'Permohonan Penerbitan SPB',
+          'Daftar ABK',
+          'STBLKK',
+          'Faktur BBM'
+        ];
+
+        // Dokumen untuk nelayan keberangkatan
+        const departureNelayanDocuments = [
+          'SPB',
+          'Crew List', 
+          'Perbekalan',
+          'SLO',
+          'Pernyataan Nahkoda'
+        ];
+
+        // Dokumen untuk kedatangan (sama untuk petugas dan nelayan)
+        const arrivalDocuments = [
+          'STBLKK',
+          'Rekom Bongkar',
+          'SPB Asal'
+        ];
+
         menu.forEach(m=>{
           const div = document.createElement('div');
           div.id = m.id;
           div.className = 'content-page';
           if(m.id!=='departurePetugas') div.style.display='none';
+          
+          let documents;
+          if (m.type === 'arrival') {
+            documents = arrivalDocuments;
+          } else if (m.id === 'departurePetugas') {
+            documents = departurePetugasDocuments;
+          } else if (m.id === 'departureNelayan') {
+            documents = departureNelayanDocuments;
+          } else {
+            documents = departurePetugasDocuments;
+          }
+          
+          const documentInputs = documents.map(doc => 
+            `<label>${doc}: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>`
+          ).join('');
+
           div.innerHTML = `
             <h2>${m.title}</h2>
             <div class="card">
-              <form>
+              <div class="form-type-indicator">
+                <h3>📋 Form ${m.category} - ${m.type === 'departure' ? 'Keberangkatan' : 'Kedatangan'}</h3>
+              </div>
+              <form data-form-type="${m.category}-${m.type === 'departure' ? 'Keberangkatan' : 'Kedatangan'}">
                 <input type="text" class="form-control" placeholder="Nama Kapal" required>
                 <div class="form-row">
                   <input type="date" class="form-control" required>
@@ -109,16 +166,7 @@ body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea
                 <input type="text" class="form-control" placeholder="Kapten Kapal" required>
                 <input type="text" class="form-control" placeholder="GT (Opsional)">
                 <h4 style="margin:15px 0 10px;color:#2c3e50;">📎 Upload Dokumen</h4>
-                <label>SPB: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Crew List: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Perbekalan: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>SLO: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Pernyataan Nahkoda: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Kwitansi Tambat Labuh: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Permohonan Penerbitan SPB: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Daftar ABK: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>STBLKK: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
-                <label>Faktur BBM: <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></label>
+                ${documentInputs}
                 <button type="button" class="btn-generate" onclick="generateAll(this)">Generate QR & Preview</button>
                 <button type="button" class="btn-generate" onclick="downloadAll(this)">⬇ Download Semua Dokumen + QR PDF</button>
               </form>
@@ -159,6 +207,7 @@ function showPage(pageId, el){
 function generateAll(btn){
   const form = btn.closest("form");
   const resultBox = form.nextElementSibling;
+  const formType = form.getAttribute('data-form-type');
   resultBox.innerHTML = "";
 
   // Ambil data form
@@ -179,6 +228,7 @@ function generateAll(btn){
   summaryDiv.innerHTML = `
     <h3>📋 Ringkasan Dokumen</h3>
     <table>
+      <tr><td>Jenis Form:</td><td><strong>${formType}</strong></td></tr>
       <tr><td>Nama Kapal:</td><td>${shipName}</td></tr>
       <tr><td>Tanggal:</td><td>${new Date(date).toLocaleDateString('id-ID')}</td></tr>
       <tr><td>Waktu:</td><td>${time}</td></tr>
@@ -190,7 +240,7 @@ function generateAll(btn){
   `;
   resultBox.appendChild(summaryDiv);
 
-  // Buat QR Code
+  // Buat QR Code dengan URL yang lebih sederhana dan mudah dibaca
   const qrSection = document.createElement("div");
   qrSection.className = "qr-section";
   qrSection.innerHTML = `<h3>🔲 QR Code Dokumen</h3>`;
@@ -198,25 +248,45 @@ function generateAll(btn){
   const qrDiv = document.createElement("div");
   qrDiv.id = "qrcode-temp";
   qrSection.appendChild(qrDiv);
-  resultBox.appendChild(qrSection);
   
-  // Generate QR dengan data lengkap
-  const qrData = JSON.stringify({
+  // Format URL yang mudah dibaca - menggunakan query parameters
+  const baseUrl = "https://sandar-ratu.ppn-palabuhanratu.go.id/verify";
+  const params = new URLSearchParams({
     code: code,
+    type: formType,
     ship: shipName,
     date: date,
     time: time,
     captain: captain,
-    gt: gt,
-    timestamp: new Date().toISOString()
+    gt: gt
   });
+  const qrUrl = `${baseUrl}?${params.toString()}`;
   
+  // Info QR untuk debug
+  const qrInfo = document.createElement("div");
+  qrInfo.className = "qr-info";
+  qrInfo.innerHTML = `
+    <p><strong>🔗 URL QR Code:</strong></p>
+    <div class="qr-url">${qrUrl}</div>
+    <p><strong>📏 Panjang URL:</strong> ${qrUrl.length} karakter</p>
+    <p><strong>📊 Error Correction:</strong> Medium (25%)</p>
+    <button class="test-qr-btn" onclick="copyToClipboard('${qrUrl}')">📋 Copy URL</button>
+    <button class="test-qr-btn" onclick="openUrl('${qrUrl}')">🔗 Test URL</button>
+  `;
+  qrSection.appendChild(qrInfo);
+  
+  resultBox.appendChild(qrSection);
+  
+  // Generate QR dengan pengaturan optimal untuk keterbacaan
   new QRCode(qrDiv, {
-    text: qrData,
-    width: 200,
-    height: 200,
+    text: qrUrl,
+    width: 256,
+    height: 256,
     colorDark: "#2c3e50",
-    colorLight: "#ffffff"
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.M, // Medium error correction (25%)
+    quietZone: 4,
+    quietZoneColor: "#ffffff"
   });
 
   // Preview dokumen yang diupload
@@ -232,12 +302,13 @@ function generateAll(btn){
         const previewContainer = document.createElement("div");
         previewContainer.className="preview-container";
         
-        // Info dokumen
+        // Info dokumen dengan keterangan form type
         const docInfo = document.createElement("div");
         docInfo.className = "document-info";
         docInfo.innerHTML = `
           <h4>${label}</h4>
-          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB | 📅 ${new Date().toLocaleDateString('id-ID')}</p>
+          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB | 📅 ${new Date().toLocaleDateString('id-ID')}<br>
+          <strong>📋 Jenis: ${formType}</strong></p>
         `;
         previewContainer.appendChild(docInfo);
         
@@ -257,10 +328,10 @@ function generateAll(btn){
         }
         previewContainer.appendChild(previewEl);
 
-        // Download link
+        // Download link dengan keterangan form type
         const downloadLink = document.createElement("a");
         downloadLink.href = e.target.result;
-        downloadLink.download = `${code}_${label}_${file.name}`;
+        downloadLink.download = `[${formType}]_${code}_${label}_${file.name}`;
         downloadLink.textContent = `⬇ Download ${label}`;
         previewContainer.appendChild(downloadLink);
 
@@ -275,9 +346,32 @@ function generateAll(btn){
   }
 }
 
+// Fungsi bantuan untuk QR Code
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    alert('URL berhasil disalin ke clipboard!');
+  }).catch(function(err) {
+    console.error('Gagal menyalin: ', err);
+    // Fallback untuk browser lama
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    alert('URL berhasil disalin ke clipboard!');
+  });
+}
+
+function openUrl(url) {
+  window.open(url, '_blank');
+}
+
 async function downloadAll(btn){
   const form = btn.closest("form");
   const resultBox = form.nextElementSibling;
+  const formType = form.getAttribute('data-form-type');
   
   if(!resultBox.innerHTML.trim()){
     alert("Generate QR & Preview terlebih dahulu!");
@@ -319,6 +413,18 @@ async function downloadAll(btn){
   pdf.text('PPN Palabuhanratu', pageWidth/2, yOffset, { align: 'center' });
   yOffset += 20;
   
+  // Form Type Indicator
+  pdf.setDrawColor(52, 152, 219);
+  pdf.setFillColor(232, 244, 248);
+  pdf.roundedRect(margin, yOffset, pageWidth - 2*margin, 15, 3, 3, 'FD');
+  
+  yOffset += 10;
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, 'bold');
+  pdf.setTextColor(44, 62, 80);
+  pdf.text('JENIS FORM: ' + formType, pageWidth/2, yOffset, { align: 'center' });
+  yOffset += 15;
+  
   // Info dokumen
   pdf.setDrawColor(100);
   pdf.setFillColor(245, 245, 245);
@@ -347,16 +453,26 @@ async function downloadAll(btn){
   if(qrDiv){
     const canvas = qrDiv.querySelector('canvas');
     if(canvas){
-      checkAndAddPage(50);
+      checkAndAddPage(70);
       pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
-      pdf.text('QR CODE DOKUMEN', pageWidth/2, yOffset, { align: 'center' });
+      pdf.text('QR CODE VERIFIKASI DOKUMEN', pageWidth/2, yOffset, { align: 'center' });
       yOffset += 10;
       
       const imgData = canvas.toDataURL('image/png');
-      const qrSize = 40;
+      const qrSize = 50;
       pdf.addImage(imgData, 'PNG', (pageWidth-qrSize)/2, yOffset, qrSize, qrSize);
-      yOffset += qrSize + 20;
+      yOffset += qrSize + 10;
+      
+      // Tambahkan URL QR di PDF
+      const qrUrl = resultBox.querySelector('.qr-url').textContent;
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
+      pdf.text('Scan QR atau kunjungi:', pageWidth/2, yOffset, { align: 'center' });
+      yOffset += 5;
+      pdf.setFontSize(6);
+      pdf.text(qrUrl, pageWidth/2, yOffset, { align: 'center' });
+      yOffset += 15;
     }
   }
 
@@ -375,9 +491,9 @@ async function downloadAll(btn){
       const file = fileInput.files[0];
       const label = fileInput.parentElement.textContent.split(':')[0];
       
-      checkAndAddPage(25);
+      checkAndAddPage(30);
       
-      // Info dokumen
+      // Info dokumen dengan form type
       pdf.setFontSize(11);
       pdf.setFont(undefined, 'bold');
       pdf.text(docNumber + '. ' + label, margin, yOffset);
@@ -387,6 +503,12 @@ async function downloadAll(btn){
       pdf.setFont(undefined, 'normal');
       const fileInfo = file.name + ' | ' + (file.size/1024).toFixed(2) + ' KB';
       pdf.text(fileInfo, margin + 10, yOffset);
+      yOffset += 4;
+      
+      pdf.setFontSize(8);
+      pdf.setTextColor(41, 128, 185);
+      pdf.text('Jenis Form: ' + formType, margin + 10, yOffset);
+      pdf.setTextColor(0);
       yOffset += 8;
       
       // Box untuk preview
@@ -418,13 +540,17 @@ async function downloadAll(btn){
     pdf.text('SANDAR-RATU © 2025', margin, footerY);
     pdf.text('Halaman ' + i + ' dari ' + totalPages, pageWidth/2, footerY, { align: 'center' });
     pdf.text('Dicetak: ' + new Date().toLocaleDateString('id-ID'), pageWidth - margin, footerY, { align: 'right' });
+    
+    // Form type di footer
+    pdf.setFontSize(7);
+    pdf.text('Form: ' + formType, pageWidth/2, footerY + 5, { align: 'center' });
   }
   
-  // Save PDF
-  const fileName = 'SANDAR_RATU_' + shipName.replace(/\s+/g,'_') + '_' + date.replace(/-/g,'') + '.pdf';
+  // Save PDF dengan prefix form type
+  const fileName = `[${formType}]_SANDAR_RATU_${shipName.replace(/\s+/g,'_')}_${date.replace(/-/g,'')}.pdf`;
   pdf.save(fileName);
   
-  alert('Dokumen PDF berhasil di-download: ' + fileName + '\nJumlah dokumen: ' + (docNumber-1));
+  alert(`Dokumen PDF berhasil di-download: ${fileName}\nJenis Form: ${formType}\nJumlah dokumen: ${docNumber-1}`);
 }
 
 // Set tanggal hari ini sebagai default

@@ -470,17 +470,18 @@ async function downloadAll(btn){
       pdf.setFont(undefined, 'normal');
       pdf.text('Scan QR atau kunjungi:', pageWidth/2, yOffset, { align: 'center' });
       yOffset += 5;
+      pdf.setFontSize(6);
       pdf.text(qrUrl, pageWidth/2, yOffset, { align: 'center' });
-      yOffset += 15;
+      yOffset += 10;
     }
   }
 
   // Daftar Dokumen
   checkAndAddPage(20);
-  pdf.setFontSize(14);
+  pdf.setFontSize(12);
   pdf.setFont(undefined, 'bold');
   pdf.text('DOKUMEN TERLAMPIR:', margin, yOffset);
-  yOffset += 15;
+  yOffset += 10;
   
   let docNumber = 1;
   const fileInputs = form.querySelectorAll('input[type="file"]');
@@ -508,7 +509,7 @@ async function downloadAll(btn){
       pdf.setTextColor(41, 128, 185);
       pdf.text('Jenis Form: ' + formType, margin + 10, yOffset);
       pdf.setTextColor(0);
-      yOffset += 8;
+      yOffset += 5;
       
       // Box untuk preview
       pdf.setDrawColor(200);

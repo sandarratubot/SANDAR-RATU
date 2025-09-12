@@ -253,7 +253,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
 // Configuration
 const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
 const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
-const SCOPES = "https://www.googleapis.com/auth/drive.file";
+const SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
 
 // Folder mapping
 const FOLDER_MAP = {
@@ -339,23 +339,31 @@ function showDashboardDemo() {
 }
 
 // Handle Google Sign-In response
-function handleCredentialResponse(response) {
-  try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    
-    currentUser = {
-      id: payload.sub,
-      name: payload.name,
-      email: payload.email,
-      picture: payload.picture
-    };
-    
-    showDashboard();
-  } catch (error) {
-    console.error('Error handling credential response:', error);
-    showLoginError('Gagal memproses login Google');
+google.accounts.oauth2.initTokenClient({
+  client_id: CLIENT_ID,
+  scope: SCOPES,
+  callback: (tokenResponse) => {
+    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        'Authorization': 'Bearer ' + tokenResponse.access_token
+      }
+    })
+    .then(response => response.json())
+    .then(userInfo => {
+      currentUser = {
+        id: userInfo.id,
+        name: userInfo.name,
+        email: userInfo.email,
+        picture: userInfo.picture
+      };
+      showDashboard();
+    })
+    .catch(error => {
+      console.error('Error getting user info:', error);
+      alert('Gagal mendapatkan informasi pengguna');
+    });
   }
-}
+}).requestAccessToken();
 
 // Show login error
 function showLoginError(message) {

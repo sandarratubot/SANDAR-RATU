@@ -247,7 +247,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
 // Google Drive API Configuration
 const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
 const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
-const SCOPES = "https://www.googleapis.com/auth/drive.file";
+const SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+
 
 // Folder mapping
 const FOLDER_MAP = {
@@ -777,21 +778,24 @@ function generateAll(btn) {
   qrDiv.id = `qrcode-${Date.now()}`;
   qrSection.appendChild(qrDiv);
   
-  // Create QR URL - Using the appropriate folder based on form type
-  const folderId = FOLDER_MAP[formType];
-  const baseUrl = `https://drive.google.com/drive/folders/1ZpBOs2z1OkHMWFW5Zy4D4_fd_3v62xOa`;
-  const params = new URLSearchParams({
-    code: code,
-    type: formType,
-    ship: shipName,
-    date: date,
-    time: time,
-    captain: captain,
-    gt: gt,
-    officer: currentUser ? currentUser.name : 'Unknown'
-  });
-  const qrUrl = `${baseUrl}?${params.toString()}`;
-  
+ // Create QR URL - Using the appropriate folder based on form type
+const folderId = FOLDER_MAP[formType];
+if (!folderId) {
+  console.error("Folder ID tidak ditemukan untuk:", formType);
+}
+const baseUrl = `https://drive.google.com/drive/folders/${folderId}`;
+const params = new URLSearchParams({
+  code: code,
+  type: formType,
+  ship: shipName,
+  date: date,
+  time: time,
+  captain: captain,
+  gt: gt,
+  officer: currentUser ? currentUser.name : 'Unknown'
+});
+const qrUrl = `${baseUrl}?${params.toString()}`;
+ 
   // QR Info
   const qrInfo = document.createElement("div");
   qrInfo.className = "qr-info";

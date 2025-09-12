@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;display:flex;justify-content:center;align-items:center;}
@@ -168,8 +172,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
 .progress-bar{width:100%;background:#f0f0f0;border-radius:4px;overflow:hidden;margin:10px 0;display:none;}
 .progress-fill{height:20px;background:#4caf50;border-radius:4px;transition:width 0.3s ease;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:bold;}
 .footer-login{text-align:center;padding:15px;color:#6c757d;font-size:12px;border-top:1px solid #e9ecef;}
-.error-message{background:#ffebee;border:1px solid #f44336;color:#c62828;padding:15px;border-radius:6px;margin:10px 0;text-align:center;}
-.demo-mode{background:#fff3e0;border:1px solid #ff9800;color:#f57c00;padding:15px;border-radius:6px;margin:10px 0;text-align:center;}
 </style>
 </head>
 <body>
@@ -179,7 +181,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
   <div class="logo-section">
     <a href="#" class="logo">
       <div class="logo-icon">
-        <i class="fas fa-anchor"></i>
+        <img src="icon.jpeg" alt="Logo" style="width:40px; height:auto; border-radius:3px; object-fit:cover;">
       </div>
       SANDAR-RATU
     </a>
@@ -205,11 +207,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
       </svg>
       Log in with Google
     </button>
-    <div id="loginError" class="error-message" style="display:none;"></div>
-    <div id="demoMode" class="demo-mode" style="display:none;">
-      <i class="fas fa-info-circle"></i> Mode Demo - Google API tidak tersedia
-      <br><button onclick="showDashboardDemo()" style="margin-top:10px;padding:8px 16px;background:#ff9800;color:white;border:none;border-radius:4px;cursor:pointer;">Lanjutkan Demo</button>
-    </div>
   </div>
   
   <div class="footer-login">Hak Cipta © 2025 Sandar-Ratu</div>
@@ -224,8 +221,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
     </div>
     <div style="display:flex;align-items:center;gap:15px;">
       <div class="user-info">
-        <img id="userAvatar" class="user-avatar" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHg9IjgiIHk9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4KPC9zdmc+" alt="User">
-        <span id="userName">Demo User</span>
+        <img id="userAvatar" class="user-avatar" src="" alt="User">
+        <span id="userName">User</span>
       </div>
       <button class="btn-logout" onclick="logout()">Keluar</button>
     </div>
@@ -246,14 +243,11 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
-// Configuration
+// Google Drive API Configuration
 const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
 const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
-const SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+const SCOPES = "https://www.googleapis.com/auth/drive.file";
 
 // Folder mapping
 const FOLDER_MAP = {
@@ -264,140 +258,91 @@ const FOLDER_MAP = {
 };
 
 let isGoogleDriveReady = false;
-let isGoogleApiLoaded = false;
 let authInstance = null;
 let currentUser = null;
-let isDemoMode = false;
 
-// Initialize Google APIs with fallback
+// Initialize Google APIs
 function initializeGoogle() {
-  try {
-    // Check if Google APIs are available
-    if (typeof google === 'undefined') {
-      throw new Error('Google API tidak tersedia');
-    }
+  // Initialize Google Sign-In
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleCredentialResponse
+  });
 
-    // Initialize Google Sign-In
-    google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleCredentialResponse,
-      auto_select: false
+  // Initialize Google Drive API
+  gapi.load('client:auth2', () => {
+    gapi.client.init({
+      apiKey: API_KEY,
+      clientId: CLIENT_ID,
+      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+      scope: SCOPES
+    }).then(() => {
+      authInstance = gapi.auth2.getAuthInstance();
+      isGoogleDriveReady = true;
+      updateGoogleDriveStatus();
+      console.log('Google Drive API initialized successfully');
+    }).catch(error => {
+      console.error('Error initializing Google Drive API:', error);
+      updateGoogleDriveStatus('Error: ' + error.message);
     });
-
-    // Load Google API client
-    if (typeof gapi !== 'undefined') {
-      gapi.load('client:auth2', () => {
-        gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-          scope: SCOPES
-        }).then(() => {
-          authInstance = gapi.auth2.getAuthInstance();
-          isGoogleDriveReady = true;
-          isGoogleApiLoaded = true;
-          updateGoogleDriveStatus();
-          console.log('Google Drive API initialized successfully');
-        }).catch(error => {
-          console.error('Error initializing Google Drive API:', error);
-          enableDemoMode('Gagal menginisialisasi Google Drive API');
-        });
-      });
-    } else {
-      throw new Error('Google API Client tidak tersedia');
-    }
-
-  } catch (error) {
-    console.error('Google API initialization failed:', error);
-    enableDemoMode(error.message);
-  }
-}
-
-// Enable demo mode when Google APIs are not available
-function enableDemoMode(errorMessage) {
-  isDemoMode = true;
-  const loginError = document.getElementById('loginError');
-  const demoMode = document.getElementById('demoMode');
-  const googleBtn = document.getElementById('googleLoginBtn');
-  
-  loginError.textContent = errorMessage;
-  loginError.style.display = 'block';
-  demoMode.style.display = 'block';
-  googleBtn.disabled = true;
-  googleBtn.style.opacity = '0.5';
-}
-
-// Show dashboard in demo mode
-function showDashboardDemo() {
-  currentUser = {
-    id: 'demo-user',
-    name: 'Demo User',
-    email: 'demo@example.com',
-    picture: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiMzNDk4ZGIiLz4KPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHg9IjgiIHk9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4KPC9zdmc+'
-  };
-  showDashboard();
+  });
 }
 
 // Handle Google Sign-In response
-google.accounts.oauth2.initTokenClient({
-  client_id: CLIENT_ID,
-  scope: SCOPES,
-  callback: (tokenResponse) => {
-    fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: {
-        'Authorization': 'Bearer ' + tokenResponse.access_token
-      }
-    })
-    .then(response => response.json())
-    .then(userInfo => {
-      currentUser = {
-        id: userInfo.id,
-        name: userInfo.name,
-        email: userInfo.email,
-        picture: userInfo.picture
-      };
-      showDashboard();
-    })
-    .catch(error => {
-      console.error('Error getting user info:', error);
-      alert('Gagal mendapatkan informasi pengguna');
-    });
-  }
-}).requestAccessToken();
-
-// Show login error
-function showLoginError(message) {
-  const loginError = document.getElementById('loginError');
-  loginError.textContent = message;
-  loginError.style.display = 'block';
+function handleCredentialResponse(response) {
+  // Decode JWT token
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  
+  currentUser = {
+    id: payload.sub,
+    name: payload.name,
+    email: payload.email,
+    picture: payload.picture
+  };
+  
+  // Show dashboard
+  showDashboard();
 }
 
 // Google Login Button Click Handler
 document.getElementById('googleLoginBtn').addEventListener('click', function() {
-  if (isDemoMode) return;
-  
-  if (typeof google === 'undefined') {
-    enableDemoMode('Google API tidak tersedia');
-    return;
-  }
-
-  try {
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fallback: try alternative login
-        showLoginError('Login popup tidak muncul. Silakan refresh halaman dan coba lagi.');
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    showLoginError('Gagal memulai proses login: ' + error.message);
-  }
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      // Fallback to OAuth2 flow
+      google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (tokenResponse) => {
+          // Get user info after getting token
+          fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: {
+              'Authorization': 'Bearer ' + tokenResponse.access_token
+            }
+          })
+          .then(response => response.json())
+          .then(userInfo => {
+            currentUser = {
+              id: userInfo.id,
+              name: userInfo.name,
+              email: userInfo.email,
+              picture: userInfo.picture
+            };
+            showDashboard();
+          })
+          .catch(error => {
+            console.error('Error getting user info:', error);
+            alert('Gagal mendapatkan informasi pengguna');
+          });
+        }
+      }).requestAccessToken();
+    }
+  });
 });
 
 // Show dashboard after successful login
 function showDashboard() {
   if (!currentUser) {
-    showLoginError('Login gagal, silakan coba lagi');
+    alert('Login gagal, silakan coba lagi');
     return;
   }
   
@@ -419,12 +364,7 @@ function showDashboard() {
 function updateGoogleDriveStatus(errorMsg = null) {
   const statusElements = document.querySelectorAll('.google-drive-status');
   statusElements.forEach(el => {
-    if (isDemoMode) {
-      el.style.background = '#fff3e0';
-      el.style.borderColor = '#ff9800';
-      el.style.color = '#f57c00';
-      el.innerHTML = '<i class="fas fa-info-circle"></i> Mode Demo - Fitur upload Google Drive tidak tersedia';
-    } else if (errorMsg) {
+    if (errorMsg) {
       el.style.background = '#ffebee';
       el.style.borderColor = '#f44336';
       el.style.color = '#c62828';
@@ -449,11 +389,6 @@ function updateGoogleDriveStatus(errorMsg = null) {
 
 // Sign in to Google Drive
 async function signInToGoogleDrive() {
-  if (isDemoMode) {
-    alert('Mode demo - fitur upload Google Drive tidak tersedia');
-    return false;
-  }
-  
   if (!isGoogleDriveReady) {
     alert('Google Drive API belum siap. Mohon tunggu...');
     return false;
@@ -473,10 +408,6 @@ async function signInToGoogleDrive() {
 
 // Upload file to Google Drive
 async function uploadFileToGoogleDrive(file, folderId, fileName) {
-  if (isDemoMode) {
-    throw new Error('Mode demo - upload tidak tersedia');
-  }
-
   const metadata = {
     name: fileName,
     parents: [folderId]
@@ -508,13 +439,6 @@ function logout() {
   
   // Reset user data
   currentUser = null;
-  isDemoMode = false;
-  
-  // Reset login page
-  document.getElementById('loginError').style.display = 'none';
-  document.getElementById('demoMode').style.display = 'none';
-  document.getElementById('googleLoginBtn').disabled = false;
-  document.getElementById('googleLoginBtn').style.opacity = '1';
   
   // Show login page
   document.getElementById("dashboard").style.display = "none";
@@ -614,8 +538,8 @@ function initializePages() {
           <h4 style="margin:15px 0 10px;color:#2c3e50;">📎 Upload Dokumen</h4>
           ${documentInputs}
           <button type="button" class="btn-generate" onclick="generateAll(this)">Generate QR & Preview</button>
-          <button type="button" class="btn-upload-drive" onclick="uploadToGoogleDrive(this)" ${isDemoMode ? 'disabled' : ''}>
-            <i class="fab fa-google-drive"></i> ${isDemoMode ? 'Upload Tidak Tersedia (Demo)' : 'Upload ke Google Drive'}
+          <button type="button" class="btn-upload-drive" onclick="uploadToGoogleDrive(this)" disabled>
+            <i class="fab fa-google-drive"></i> Upload ke Google Drive
           </button>
           <button type="button" class="btn-generate" onclick="downloadAll(this)">⬇ Download Semua Dokumen + QR PDF</button>
           
@@ -655,23 +579,14 @@ function initializePages() {
 function enableUploadButtons() {
   const uploadButtons = document.querySelectorAll('.btn-upload-drive');
   uploadButtons.forEach(btn => {
-    if (isDemoMode) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-info-circle"></i> Upload Tidak Tersedia (Demo)';
-    } else if (isGoogleDriveReady) {
+    if (isGoogleDriveReady) {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fab fa-google-drive"></i> Upload ke Google Drive';
     }
   });
 }
 
 // Upload to Google Drive function
 async function uploadToGoogleDrive(btn) {
-  if (isDemoMode) {
-    alert('Mode demo - fitur upload Google Drive tidak tersedia.\nDalam mode demo, Anda hanya dapat menggunakan fitur generate QR dan download PDF.');
-    return;
-  }
-
   const form = btn.closest("form");
   const formType = form.getAttribute('data-form-type');
   const progressBar = form.querySelector('.progress-bar');
@@ -751,7 +666,7 @@ async function uploadToGoogleDrive(btn) {
             name: fileName,
             label: label,
             id: result.id,
-            url: `https://drive.google.com/file/d/${result.id}/view`
+            url: `https://drive.google.com/drive/folders/${result.id}/view`
           });
         } else {
           throw new Error('Upload failed: ' + (result.error?.message || 'Unknown error'));
@@ -807,7 +722,7 @@ async function uploadToGoogleDrive(btn) {
     errorDiv.style.display = 'block';
     statusDiv.style.display = 'none';
   } finally {
-    btn.disabled = isDemoMode;
+    btn.disabled = false;
     setTimeout(() => {
       progressBar.style.display = 'none';
       progressFill.style.width = '0%';
@@ -864,7 +779,7 @@ function generateAll(btn) {
   
   // Create QR URL - Using the appropriate folder based on form type
   const folderId = FOLDER_MAP[formType];
-  const baseUrl = `https://drive.google.com/drive/folders/${folderId}`;
+  const baseUrl = `https://drive.google.com/drive/folders/1ZpBOs2z1OkHMWFW5Zy4D4_fd_3v62xOa`;
   const params = new URLSearchParams({
     code: code,
     type: formType,
@@ -968,9 +883,9 @@ function generateAll(btn) {
     return;
   }
   
-  // Enable upload button after successful generation (unless in demo mode)
+  // Enable upload button after successful generation
   const uploadBtn = form.querySelector('.btn-upload-drive');
-  if (uploadBtn && isGoogleDriveReady && !isDemoMode) {
+  if (uploadBtn && isGoogleDriveReady) {
     uploadBtn.disabled = false;
   }
 }
@@ -1193,69 +1108,28 @@ async function downloadAll(btn) {
   }
 }
 
-// Initialize with fallback for missing APIs
+// Initialize Google APIs when page loads
 document.addEventListener('DOMContentLoaded', function() {
-  // Add external script loading with error handling
-  const loadScript = (src) => {
-    return new Promise((resolve, reject) => {
-      if (document.querySelector(`script[src="${src}"]`)) {
-        resolve();
-        return;
-      }
-      
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  };
-
-  // Try to load Google APIs with timeout
-  const googleApiTimeout = setTimeout(() => {
-    console.log('Google API loading timeout');
-    enableDemoMode('Google API loading timeout - menggunakan mode demo');
-  }, 10000); // 10 second timeout
-
-  // Load Google Sign-In API
-  loadScript('https://accounts.google.com/gsi/client')
-    .then(() => loadScript('https://apis.google.com/js/api.js'))
-    .then(() => {
-      clearTimeout(googleApiTimeout);
-      // Wait a bit for APIs to be fully available
-      setTimeout(() => {
-        if (typeof google !== 'undefined' && typeof gapi !== 'undefined') {
-          initializeGoogle();
-        } else {
-          enableDemoMode('Google APIs tidak tersedia - menggunakan mode demo');
-        }
-      }, 1000);
-    })
-    .catch(error => {
-      clearTimeout(googleApiTimeout);
-      console.error('Failed to load Google APIs:', error);
-      enableDemoMode('Gagal memuat Google APIs - menggunakan mode demo');
-    });
+  // Wait for Google APIs to load
+  setTimeout(() => {
+    if (typeof google !== 'undefined' && typeof gapi !== 'undefined') {
+      initializeGoogle();
+    } else {
+      console.log('Google APIs not available');
+      // Show error message
+      document.querySelector('.google-login-btn').innerHTML = 
+        '<i class="fas fa-exclamation-triangle"></i> Google API tidak tersedia';
+      document.querySelector('.google-login-btn').disabled = true;
+    }
+  }, 1000);
 });
 
-// Listen for auth status changes (only if not in demo mode)
+// Listen for auth status changes
 setInterval(() => {
-  if (authInstance && !isDemoMode) {
+  if (authInstance) {
     updateGoogleDriveStatus();
   }
 }, 5000);
-
-// Handle network errors gracefully
-window.addEventListener('online', function() {
-  if (!isDemoMode && !isGoogleApiLoaded) {
-    console.log('Network restored, attempting to reconnect to Google APIs');
-    setTimeout(initializeGoogle, 2000);
-  }
-});
-
-window.addEventListener('offline', function() {
-  console.log('Network offline - some features may not work');
-});
 </script>
 
 </body>

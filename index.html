@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Content Security Policy untuk mengizinkan Google API -->
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self' https://accounts.google.com https://apis.google.com https://www.googleapis.com https://www.gstatic.com data: blob:;
+           script-src 'self' https://accounts.google.com https://apis.google.com https://www.gstatic.com 'unsafe-inline';
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+           img-src 'self' data: https://*.googleusercontent.com https://www.gstatic.com;
+           connect-src 'self' https://accounts.google.com https://apis.google.com https://www.googleapis.com;
+           object-src 'none'; frame-src https://accounts.google.com;">
 <title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -272,22 +280,21 @@ function initializeGoogle() {
 
   // Initialize Google Drive API
   gapi.load('client:auth2', () => {
-    gapi.client.init({
-      apiKey: API_KEY,
-      clientId: CLIENT_ID,
-      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-      scope: SCOPES
-    }).then(() => {
-      authInstance = gapi.auth2.getAuthInstance();
-      isGoogleDriveReady = true;
-      updateGoogleDriveStatus();
-      console.log('Google Drive API initialized successfully');
-    }).catch(error => {
-      console.error('Error initializing Google Drive API:', error);
-      updateGoogleDriveStatus('Error: ' + error.message);
-    });
+  gapi.client.init({
+    apiKey: API_KEY,
+    clientId: CLIENT_ID,
+    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    scope: SCOPES
+  }).then(() => {
+    authInstance = gapi.auth2.getAuthInstance();
+    isGoogleDriveReady = true;
+    updateGoogleDriveStatus();
+    console.log('Google Drive API initialized successfully');
+  }).catch(error => {
+    console.error('Error initializing Google Drive API:', error);
+    updateGoogleDriveStatus('Error: ' + (error.result?.error?.message || error.message));
   });
-}
+});
 
 // Handle Google Sign-In response
 function handleCredentialResponse(response) {

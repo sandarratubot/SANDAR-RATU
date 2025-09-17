@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANDAR-RATU - Sistem Administrasi & Dokumen Kesyahbandaran</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;display:flex;justify-content:center;align-items:center;}
+
+/* Login Styles */
+.login-container{
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.1);
+  max-width:400px;
+  width:100%;
+  overflow:hidden;
+}
+
+.logo-section{
+  text-align:center;
+  padding:40px 30px 20px;
+  background:linear-gradient(135deg,#3498db, #1a73e8);
+}
+
+.logo{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:24px;
+  font-weight:700;
+  color:#333;
+  text-decoration:none;
+}
+
+.logo-icon{
+  width:32px;
+  height:32px;
+  background:#333;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#3498db;
+}
+
+.warning-section{
+  background:#feffd6;
+  border:1px solid #fff4ce;
+  margin:20px;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+}
+
+.warning-title{
+  background:#ffffff;
+  border:1px solid #ffeaa7;
+  color:#000000;
+  padding:8px 16px;
+  border-radius:8px;
+  font-weight:600;
+  margin-bottom:15px;
+  display:inline-block;
+}
+
+.warning-text{
+  color:#000000;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:15px;
+}
+
+.login-method-section{
+  padding:20px;
+  text-align:center;
+}
+
+.method-title{
+  color:#6c757d;
+  font-size:13px;
+  margin-bottom:15px;
+  font-style:italic;
+}
+
+.google-login-btn{
+  width:100%;
+  padding:12px 20px;
+  border:2px solid #e0e0e0;
+  background:#fff;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:500;
+  color:#5f6368;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.google-login-btn:hover{
+  border-color:#1a73e8;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+}
+
+.google-login-btn:disabled{
+  background:#f5f5f5;
+  color:#ccc;
+  cursor:not-allowed;
+}
+
+.google-icon{
+  width:18px;
+  height:18px;
+}
+
+/* Dashboard Styles */
+.dashboard{display:none;flex-direction:column;height:100vh;width:100%;}
+.header{background:#2c3e50;color:white;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;}
+.header .logo-icon{background:#3498db;width:36px;height:36px;border-radius:8px;display:flex;justify-content:center;align-items:center;margin-right:10px;}
+.header .user-info{display:flex;align-items:center;gap:10px;}
+.header .user-avatar{width:32px;height:32px;border-radius:50%;border:2px solid #3498db;}
+.main-container{display:flex;flex:1;}
+.sidebar{width:240px;background:#3498db;color:white;padding-top:20px;}
+.sidebar div{padding:8px 20px;font-weight:600;opacity:0.8;font-size:13px;}
+.sidebar a{display:flex;align-items:center;padding:12px 20px;color:white;text-decoration:none;transition:0.3s;cursor:pointer;}
+.sidebar a:hover{background:rgba(255,255,255,0.1);}
+.sidebar a.active{background:rgba(0,0,0,0.25);font-weight:bold;}
+.content{flex:1;padding:25px;overflow-y:auto;background:#f5f5f5;}
+.content h2{margin-bottom:20px;color:#2c3e50;}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.form-row{display:flex;gap:15px;margin-bottom:15px;}
+.form-row .form-control{flex:1;}
+.form-control{width:100%;padding:12px;margin-bottom:15px;border:1px solid #ddd;border-radius:8px;}
+.btn-generate{width:100%;padding:12px;background:#2ecc71;border:none;color:white;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.btn-generate:hover{background:#27ae60;}
+.btn-upload-drive{width:100%;padding:12px;background:#1a73e8;border:none;color:white;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.btn-upload-drive:hover{background:#1557b0;}
+.btn-upload-drive:disabled{background:#ccc;cursor:not-allowed;}
+.btn-logout{background:#e74c3c;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;}
+.result-container{margin-top:15px;}
+.preview-container{margin-top:8px;padding:15px;background:#fafafa;border:1px solid #ddd;border-radius:6px;display:flex;flex-direction:column;gap:10px;}
+.preview-container .document-info{background:#fff;padding:10px;border-radius:5px;border-left:4px solid #3498db;}
+.preview-container .document-info h4{color:#2c3e50;margin-bottom:5px;}
+.preview-container .document-info p{color:#7f8c8d;font-size:12px;}
+.preview-container embed,.preview-container img{width:100%;max-height:300px;border-radius:6px;object-fit:contain;border:1px solid #ddd;}
+.preview-container a{align-self:flex-start;text-decoration:none;color:#2980b9;font-weight:bold;padding:5px 10px;background:#ecf0f1;border-radius:4px;}
+.qr-section{background:#fff;padding:15px;border-radius:8px;text-align:center;border:2px solid #3498db;margin-bottom:15px;}
+.qr-section h3{color:#2c3e50;margin-bottom:10px;}
+.qr-info{background:#e8f6ff;padding:10px;border-radius:6px;margin-top:10px;border:1px solid #3498db;}
+.qr-info p{margin:3px 0;font-size:12px;color:#2c3e50;}
+.qr-info .qr-url{background:#fff;padding:8px;margin:5px 0;border-radius:4px;word-break:break-all;font-family:monospace;font-size:13px;border:1px solid #bdc3c7;max-height:60px;overflow-y:auto;}
+.document-summary{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;border-left:4px solid #27ae60;}
+.document-summary h3{color:#2c3e50;margin-bottom:10px;}
+.document-summary table{width:100%;border-collapse:collapse;}
+.document-summary table td{padding:5px;border-bottom:1px solid #ecf0f1;}
+.document-summary table td:first-child{font-weight:bold;width:30%;}
+.form-type-indicator{background:#e8f4f8;border:2px solid #3498db;padding:10px;border-radius:8px;margin-bottom:15px;text-align:center;}
+.form-type-indicator h3{color:#2c3e50;margin:0;}
+.test-qr-btn{background:#e74c3c;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;margin:5px;font-size:12px;}
+.test-qr-btn:hover{background:#c0392b;}
+.content-page{display:none;}
+.content-page.active{display:block;}
+.document-label{display:block;margin-bottom:10px;font-weight:600;color:#2c3e50;}
+.document-label input{margin-top:5px;}
+.upload-status{background:#e8f5e8;border:1px solid #4caf50;color:#2e7d32;padding:10px;border-radius:6px;margin:10px 0;display:none;}
+.upload-error{background:#ffebee;border:1px solid #f44336;color:#c62828;padding:10px;border-radius:6px;margin:10px 0;display:none;}
+.google-drive-status{background:#e3f2fd;border:1px solid #2196f3;color:#1565c0;padding:10px;border-radius:6px;margin:10px 0;text-align:center;}
+.progress-bar{width:100%;background:#f0f0f0;border-radius:4px;overflow:hidden;margin:10px 0;display:none;}
+.progress-fill{height:20px;background:#4caf50;border-radius:4px;transition:width 0.3s ease;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:bold;}
+.footer-login{text-align:center;padding:15px;color:#6c757d;font-size:12px;border-top:1px solid #e9ecef;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-container">
+  <div class="logo-section">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-anchor"></i>
+      </div>
+      SANDAR-RATU
+    </a>
+  </div>
+  
+  <div class="warning-section">
+    <div class="warning-title">Peringatan</div>
+    <div class="warning-text">
+      Halaman ini memerlukan autentikasi.<br>
+      Silahkan klik tombol login di bawah untuk melanjutkan.<br>
+      Terima kasih.
+    </div>
+  </div>
+  
+  <div class="login-method-section">
+    <div class="method-title">- select login method -</div>
+    <button id="googleLoginBtn" class="google-login-btn">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      <span id="loginBtnText">Log in with Google</span>
+    </button>
+  </div>
+  
+  <div class="footer-login">Hak Cipta © 2025 Sandar-Ratu</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard">
+  <div class="header">
+    <div style="display:flex;align-items:center;">
+      <div class="logo-icon"><i class="fas fa-anchor"></i></div>
+      <strong>SANDAR-RATU</strong>
+    </div>
+    <div style="display:flex;align-items:center;gap:15px;">
+      <div class="user-info">
+        <img id="userAvatar" class="user-avatar" src="" alt="User">
+        <span id="userName">User</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Keluar</button>
+    </div>
+  </div>
+  <div class="main-container">
+    <div class="sidebar">
+      <div>👨‍✈️ Petugas</div>
+      <a onclick="showPage('departurePetugas', this)"><i class="fas fa-anchor"></i>&nbsp; Keberangkatan</a>
+      <a onclick="showPage('arrivalPetugas', this)"><i class="fas fa-ship"></i>&nbsp; Kedatangan</a>
+      <div>🚢 Nelayan</div>
+      <a onclick="showPage('departureNelayan', this)"><i class="fas fa-fish"></i>&nbsp; Keberangkatan</a>
+      <a onclick="showPage('arrivalNelayan', this)"><i class="fas fa-water"></i>&nbsp; Kedatangan</a>
+    </div>
+
+    <div class="content" id="mainContent">
+      <!-- Content pages will be generated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+// Google API Configuration
+const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
+    const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
+    const SCOPES = "https://www.googleapis.com/auth/drive.file";
+
+    const FOLDER_MAP = {
+        "Petugas-Keberangkatan": "1Ws2ctYHbdUD7Wza2ld4KxO0j7fiFcg3o",
+        "Petugas-Kedatangan": "1BIDQw9AMiY5_Mxt1OBKC1Lce3xzjtfTz",
+        "Nelayan-Keberangkatan": "1bnyimhbu884iAdNX75u_MxtPN2azgAFy",
+        "Nelayan-Kedatangan": "1Yt_-nTkJrZNO7Y2ZlBJIqebnMu0ncE-M"
+};
+
+// Global variables
+let tokenClient;
+let gapi_inited = false;
+let currentUser = null;
+let accessToken = null;
+
+// Initialize Google APIs
+async function gapiLoaded() {
+  await gapi.load('client', initializeGapiClient);
+}
+
+async function initializeGapiClient() {
+  try {
+    await gapi.client.init({
+      apiKey: API_KEY,
+      discoveryDocs: [DISCOVERY_DOC],
+    });
+    gapi_inited = true;
+    console.log('GAPI initialized');
+    updateGoogleDriveStatus();
+  } catch (error) {
+    console.error('Error initializing GAPI:', error);
+    updateGoogleDriveStatus('Error: Gagal menginisialisasi Google API');
+  }
+}
+
+// Initialize token client
+function gisLoaded() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      console.log('Token received:', tokenResponse);
+      if (tokenResponse.error !== undefined) {
+        throw (tokenResponse);
+      }
+      accessToken = tokenResponse.access_token;
+      
+      // Get user info
+      getUserInfo(accessToken).then(userInfo => {
+        currentUser = userInfo;
+        showDashboard();
+      }).catch(error => {
+        console.error('Error getting user info:', error);
+        alert('Gagal mendapatkan informasi pengguna');
+      });
+    },
+  });
+  
+  console.log('GIS initialized');
+  
+  // Enable login button
+  const loginBtn = document.getElementById('googleLoginBtn');
+  loginBtn.disabled = false;
+  document.getElementById('loginBtnText').textContent = 'Log in with Google';
+}
+
+// Get user info from Google API
+async function getUserInfo(token) {
+  const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to get user info');
+  }
+  
+  return await response.json();
+}
+
+// Google Login Button Click Handler
+document.getElementById('googleLoginBtn').addEventListener('click', function() {
+  if (!tokenClient) {
+    alert('Google API belum siap. Mohon tunggu...');
+    return;
+  }
+  
+  if (!gapi_inited) {
+    alert('Google Drive API belum siap. Mohon tunggu...');
+    return;
+  }
+  
+  // Request access token
+  tokenClient.requestAccessToken({prompt: 'consent'});
+});
+
+// Show dashboard after successful login
+function showDashboard() {
+  if (!currentUser) {
+    alert('Login gagal, silakan coba lagi');
+    return;
+  }
+  
+  console.log('Showing dashboard for user:', currentUser);
+  
+  // Update UI with user info
+  document.getElementById('userName').textContent = currentUser.name || 'User';
+  document.getElementById('userAvatar').src = currentUser.picture || '';
+  
+  // Show dashboard
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("dashboard").style.display = "flex";
+  document.body.style.background = "white";
+  
+  // Initialize pages and show first page
+  initializePages();
+  showPage('departurePetugas', document.querySelector(".sidebar a"));
+  
+  // Update Google Drive status
+  setTimeout(() => {
+    updateGoogleDriveStatus();
+  }, 100);
+}
+
+// Update Google Drive connection status
+function updateGoogleDriveStatus(errorMsg = null) {
+  const statusElements = document.querySelectorAll('.google-drive-status');
+  statusElements.forEach(el => {
+    if (errorMsg) {
+      el.style.background = '#ffebee';
+      el.style.borderColor = '#f44336';
+      el.style.color = '#c62828';
+      el.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMsg}`;
+    } else if (gapi_inited && accessToken) {
+      el.style.background = '#e8f5e8';
+      el.style.borderColor = '#4caf50';
+      el.style.color = '#2e7d32';
+      el.innerHTML = '<i class="fas fa-check-circle"></i> Google Drive terhubung dan siap digunakan';
+    } else if (gapi_inited) {
+      el.style.background = '#fff3e0';
+      el.style.borderColor = '#ff9800';
+      el.style.color = '#f57c00';
+      el.innerHTML = '<i class="fas fa-info-circle"></i> Google Drive siap, login untuk mulai upload';
+    } else {
+      el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungkan ke Google Drive...';
+    }
+  });
+  
+  // Enable/disable upload buttons
+  const uploadButtons = document.querySelectorAll('.btn-upload-drive');
+  uploadButtons.forEach(btn => {
+    btn.disabled = !(gapi_inited && accessToken);
+  });
+}
+
+// Upload file to Google Drive using fetch
+async function uploadFileToGoogleDrive(file, folderId, fileName) {
+  const metadata = {
+    name: fileName,
+    parents: [folderId]
+  };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+  form.append('file', file);
+
+  const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: new Headers({
+      'Authorization': 'Bearer ' + accessToken
+    }),
+    body: form
+  });
+
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
+// Logout function
+function logout() {
+  // Revoke access token
+  if (accessToken) {
+    google.accounts.oauth2.revoke(accessToken, () => {
+      console.log('Access token revoked');
+    });
+  }
+  
+  // Reset variables
+  currentUser = null;
+  accessToken = null;
+  
+  // Show login page
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("loginPage").style.display = "block";
+  document.body.style.background = "#f8f9fa";
+  
+  // Clear content
+  document.getElementById("mainContent").innerHTML = "";
+  
+  console.log('User logged out');
+}
+
+// Show page function
+function showPage(pageId, el) {
+  // Hide all pages
+  document.querySelectorAll(".content-page").forEach(p => p.style.display = "none");
+  
+  // Show selected page
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) {
+    targetPage.style.display = "block";
+  }
+  
+  // Update active menu
+  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
+  if (el) {
+    el.classList.add("active");
+  }
+}
+
+// Menu configuration
+const menu = [
+  {id:'departurePetugas', title:'⚓ Petugas - Keberangkatan', type: 'departure', category: 'Petugas'},
+  {id:'arrivalPetugas', title:'⚓ Petugas - Kedatangan', type: 'arrival', category: 'Petugas'},
+  {id:'departureNelayan', title:'🚢 Nelayan - Keberangkatan', type: 'departure', category: 'Nelayan'},
+  {id:'arrivalNelayan', title:'🚢 Nelayan - Kedatangan', type: 'arrival', category: 'Nelayan'}
+];
+
+// Document lists
+const departurePetugasDocuments = [
+  'SPB', 'Crew List', 'Perbekalan', 'SLO', 'Pernyataan Nahkoda',
+  'Kwitansi Tambat Labuh', 'Permohonan Penerbitan SPB', 'Daftar ABK', 'STBLKK', 'Faktur BBM'
+];
+
+const departureNelayanDocuments = [
+  'SPB', 'Crew List', 'Perbekalan', 'SLO', 'Pernyataan Nahkoda'
+];
+
+const arrivalDocuments = [
+  'STBLKK', 'Rekom Bongkar', 'SPB Asal'
+];
+
+// Initialize pages
+function initializePages() {
+  const contentDiv = document.getElementById("mainContent");
+  contentDiv.innerHTML = "";
+  
+  menu.forEach(m => {
+    const div = document.createElement('div');
+    div.id = m.id;
+    div.className = 'content-page';
+    
+    let documents;
+    if (m.type === 'arrival') {
+      documents = arrivalDocuments;
+    } else if (m.id === 'departurePetugas') {
+      documents = departurePetugasDocuments;
+    } else if (m.id === 'departureNelayan') {
+      documents = departureNelayanDocuments;
+    } else {
+      documents = departurePetugasDocuments;
+    }
+    
+    const documentInputs = documents.map(doc => 
+      `<label class="document-label">${doc}: 
+        <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+      </label>`
+    ).join('');
+
+    div.innerHTML = `
+      <h2>${m.title}</h2>
+      <div class="card">
+        <div class="form-type-indicator">
+          <h3>📋 Form ${m.category} - ${m.type === 'departure' ? 'Keberangkatan' : 'Kedatangan'}</h3>
+        </div>
+        
+        <div class="google-drive-status">
+          <i class="fas fa-spinner fa-spin"></i> Menghubungkan ke Google Drive...
+        </div>
+        
+        <form data-form-type="${m.category}-${m.type === 'departure' ? 'Keberangkatan' : 'Kedatangan'}">
+          <input type="text" class="form-control" placeholder="Nama Kapal" required>
+          <div class="form-row">
+            <input type="date" class="form-control" required>
+            <input type="time" class="form-control" required>
+          </div>
+          <input type="text" class="form-control" placeholder="Nama Nahkoda" required>
+          <input type="text" class="form-control" placeholder="GT">
+          <h4 style="margin:15px 0 10px;color:#2c3e50;">📎 Upload Dokumen</h4>
+          ${documentInputs}
+          <button type="button" class="btn-generate" onclick="generateAll(this)">Generate QR & Preview</button>
+          <button type="button" class="btn-upload-drive" onclick="uploadToGoogleDrive(this)" disabled>
+            <i class="fab fa-google-drive"></i> Upload ke Google Drive
+          </button>
+          <button type="button" class="btn-generate" onclick="downloadAll(this)">⬇ Download Semua Dokumen + QR PDF</button>
+          
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 0%;">0%</div>
+          </div>
+          <div class="upload-status"></div>
+          <div class="upload-error"></div>
+        </form>
+        <div class="result-container"></div>
+      </div>
+    `;
+    
+    contentDiv.appendChild(div);
+  });
+  
+  // Set default date and time
+  const today = new Date().toISOString().split("T")[0];
+  const now = new Date().toTimeString().slice(0, 5);
+  
+  document.querySelectorAll('input[type="date"]').forEach(input => {
+    input.value = today;
+  });
+  
+  document.querySelectorAll('input[type="time"]').forEach(input => {
+    input.value = now;
+  });
+}
+
+// Upload to Google Drive function
+async function uploadToGoogleDrive(btn) {
+  const form = btn.closest("form");
+  const formType = form.getAttribute('data-form-type');
+  const progressBar = form.querySelector('.progress-bar');
+  const progressFill = form.querySelector('.progress-fill');
+  const statusDiv = form.querySelector('.upload-status');
+  const errorDiv = form.querySelector('.upload-error');
+  
+  // Hide previous messages
+  statusDiv.style.display = 'none';
+  errorDiv.style.display = 'none';
+  
+  // Check if we have access token
+  if (!accessToken) {
+    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Harap login ulang untuk mengakses Google Drive!';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Get form data
+  const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
+  const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+  const time = form.querySelector('input[type="time"]').value || "00:00";
+  const captain = form.querySelectorAll('input[type="text"]')[1].value || "Nahkoda";
+  
+  if (!shipName.trim()) {
+    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Nama kapal harus diisi!';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Get folder ID
+  const folderId = FOLDER_MAP[formType];
+  if (!folderId) {
+    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Folder tidak ditemukan untuk jenis form ini!';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Get files to upload
+  const fileInputs = Array.from(form.querySelectorAll('input[type="file"]'));
+  const filesToUpload = fileInputs.filter(input => input.files[0]).map(input => ({
+    file: input.files[0],
+    label: input.parentElement.textContent.split(':')[0],
+    input: input
+  }));
+  
+  if (filesToUpload.length === 0) {
+    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Pilih minimal satu file untuk diupload!';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Show progress bar
+  progressBar.style.display = 'block';
+  btn.disabled = true;
+  
+  try {
+    let uploadedCount = 0;
+    const totalFiles = filesToUpload.length;
+    const results = [];
+    
+    statusDiv.innerHTML = `<i class="fas fa-upload"></i> Mengupload ${totalFiles} file ke Google Drive...`;
+    statusDiv.style.display = 'block';
+    
+    for (const fileData of filesToUpload) {
+      const { file, label } = fileData;
+      
+      // Create filename
+      const timestamp = date.replace(/-/g, '') + '_' + time.replace(':', '');
+      const fileName = `[${formType}]_${shipName.replace(/\s+/g, '_')}_${label}_${timestamp}.${file.name.split('.').pop()}`;
+      
+      try {
+        const result = await uploadFileToGoogleDrive(file, folderId, fileName);
+        
+        if (result.id) {
+          uploadedCount++;
+          results.push({
+            name: fileName,
+            label: label,
+            id: result.id,
+            url: `https://drive.google.com/file/d/${result.id}/view`
+          });
+        } else {
+          throw new Error('Upload failed: ' + (result.error?.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error(`Error uploading ${fileName}:`, error);
+        results.push({
+          name: fileName,
+          label: label,
+          error: error.message
+        });
+      }
+      
+      // Update progress
+      const progress = Math.round(((uploadedCount + (results.filter(r => r.error).length)) / totalFiles) * 100);
+      progressFill.style.width = progress + '%';
+      progressFill.textContent = progress + '%';
+      
+      statusDiv.innerHTML = `<i class="fas fa-upload"></i> Mengupload file ${uploadedCount + (results.filter(r => r.error).length) + 1} dari ${totalFiles}...`;
+    }
+    
+    // Show results
+    const successCount = results.filter(r => !r.error).length;
+    const errorCount = results.filter(r => r.error).length;
+    
+    if (successCount > 0) {
+      let resultHtml = `<i class="fas fa-check-circle"></i> Berhasil mengupload ${successCount} file ke Google Drive!<br><br>`;
+      
+      results.filter(r => !r.error).forEach(result => {
+        resultHtml += `• <strong>${result.label}</strong>: <a href="${result.url}" target="_blank">${result.name}</a><br>`;
+      });
+      
+      if (errorCount > 0) {
+        resultHtml += `<br><strong style="color:#f44336;">Gagal upload ${errorCount} file:</strong><br>`;
+        results.filter(r => r.error).forEach(result => {
+          resultHtml += `• <strong>${result.label}</strong>: ${result.error}<br>`;
+        });
+      }
+      
+      statusDiv.innerHTML = resultHtml;
+      statusDiv.style.background = '#e8f5e8';
+      statusDiv.style.borderColor = '#4caf50';
+      statusDiv.style.color = '#2e7d32';
+    } else {
+      errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Gagal mengupload semua file!<br>${results.map(r => `• ${r.label}: ${r.error}`).join('<br>')}`;
+      errorDiv.style.display = 'block';
+      statusDiv.style.display = 'none';
+    }
+    
+  } catch (error) {
+    console.error('Upload process failed:', error);
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Terjadi kesalahan: ${error.message}`;
+    errorDiv.style.display = 'block';
+    statusDiv.style.display = 'none';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => {
+      progressBar.style.display = 'none';
+      progressFill.style.width = '0%';
+      progressFill.textContent = '0%';
+    }, 2000);
+  }
+}
+
+// Generate QR and preview
+function generateAll(btn) {
+  const form = btn.closest("form");
+  const resultBox = form.nextElementSibling;
+  const formType = form.getAttribute('data-form-type');
+  resultBox.innerHTML = "";
+
+  // Get form data
+  const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
+  const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+  const time = form.querySelector('input[type="time"]').value || "00:00";
+  const captain = form.querySelectorAll('input[type="text"]')[1].value || "Nahkoda";
+  const gt = form.querySelectorAll('input[type="text"]')[2].value || "-";
+  
+  const formattedDate = date.replace(/-/g, '');
+  const formattedTime = time.replace(':', '');
+  const code = `SANDAR-${shipName.replace(/\s+/g, '')}-${formattedDate}-${formattedTime}`;
+
+  // Document summary
+  const summaryDiv = document.createElement("div");
+  summaryDiv.className = "document-summary";
+  summaryDiv.innerHTML = `
+    <h3>📋 Ringkasan Dokumen</h3>
+    <table>
+      <tr><td>Jenis Form:</td><td><strong>${formType}</strong></td></tr>
+      <tr><td>Nama Kapal:</td><td>${shipName}</td></tr>
+      <tr><td>Tanggal:</td><td>${new Date(date).toLocaleDateString('id-ID')}</td></tr>
+      <tr><td>Waktu:</td><td>${time}</td></tr>
+      <tr><td>Nahkoda:</td><td>${captain}</td></tr>
+      <tr><td>GT:</td><td>${gt}</td></tr>
+      <tr><td>Kode Dokumen:</td><td><strong>${code}</strong></td></tr>
+      <tr><td>Petugas:</td><td><strong>${currentUser ? currentUser.name : 'Unknown'}</strong></td></tr>
+      <tr><td>Dibuat:</td><td>${new Date().toLocaleString('id-ID')}</td></tr>
+    </table>
+  `;
+  resultBox.appendChild(summaryDiv);
+
+  // QR Code section
+  const qrSection = document.createElement("div");
+  qrSection.className = "qr-section";
+  qrSection.innerHTML = `<h3>🔲 QR Code Dokumen</h3>`;
+  
+  const qrDiv = document.createElement("div");
+  qrDiv.id = `qrcode-${Date.now()}`;
+  qrSection.appendChild(qrDiv);
+  
+  // Create QR URL - Using the appropriate folder based on form type
+  const folderId = FOLDER_MAP[formType];
+  const baseUrl = `https://drive.google.com/drive/folders/${folderId}`;
+  const params = new URLSearchParams({
+    code: code,
+    type: formType,
+    ship: shipName,
+    date: date,
+    time: time,
+    captain: captain,
+    gt: gt,
+    officer: currentUser ? currentUser.name : 'Unknown'
+  });
+  const qrUrl = `${baseUrl}?${params.toString()}`;
+  
+  // QR Info
+  const qrInfo = document.createElement("div");
+  qrInfo.className = "qr-info";
+  qrInfo.innerHTML = `
+    <p><strong>🔗 URL QR Code:</strong></p>
+    <div class="qr-url">${qrUrl}</div>
+    <p><strong>📏 Panjang URL:</strong> ${qrUrl.length} karakter</p>
+    <p><strong>📊 Error Correction:</strong> Medium (25%)</p>
+    <p><strong>📁 Folder:</strong> ${formType}</p>
+    <p><strong>👤 Petugas:</strong> ${currentUser ? currentUser.name : 'Unknown'}</p>
+    <button class="test-qr-btn" onclick="copyToClipboard('${qrUrl.replace(/'/g, "\\'").replace(/"/g, "&quot;")}')">📋 Copy URL</button>
+    <button class="test-qr-btn" onclick="openUrl('${qrUrl.replace(/'/g, "\\'").replace(/"/g, "&quot;")}')">🔗 Test URL</button>
+  `;
+  qrSection.appendChild(qrInfo);
+  
+  resultBox.appendChild(qrSection);
+  
+  // Generate QR Code
+  try {
+    new QRCode(qrDiv, {
+      text: qrUrl,
+      width: 256,
+      height: 256,
+      colorDark: "#2c3e50",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+    qrDiv.innerHTML = '<p style="color: red;">Error generating QR code</p>';
+  }
+
+  // Preview uploaded documents
+  let docCount = 0;
+  const fileInputs = form.querySelectorAll('input[type="file"]');
+  
+  fileInputs.forEach((fileInput, index) => {
+    if (fileInput.files[0]) {
+      docCount++;
+      const file = fileInput.files[0];
+      const label = fileInput.parentElement.textContent.split(':')[0];
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewContainer = document.createElement("div");
+        previewContainer.className = "preview-container";
+        
+        // Document info
+        const docInfo = document.createElement("div");
+        docInfo.className = "document-info";
+        docInfo.innerHTML = `
+          <h4>${label}</h4>
+          <p>📄 ${file.name} | 📏 ${(file.size/1024).toFixed(2)} KB | 📅 ${new Date().toLocaleDateString('id-ID')}<br>
+          <strong>📋 Jenis: ${formType}</strong> | 👤 <strong>Petugas: ${currentUser ? currentUser.name : 'Unknown'}</strong></p>
+        `;
+        previewContainer.appendChild(docInfo);
+        
+        // Preview element
+        let previewEl;
+        if (file.type.includes("pdf")) {
+          previewEl = document.createElement("embed");
+          previewEl.src = e.target.result;
+          previewEl.type = "application/pdf";
+        } else if (file.type.includes("image")) {
+          previewEl = document.createElement("img");
+          previewEl.src = e.target.result;
+          previewEl.alt = file.name;
+        } else {
+          previewEl = document.createElement("div");
+          previewEl.innerHTML = `<p style="text-align:center;padding:50px;color:#7f8c8d;">📄 ${file.name}<br><small>Preview tidak tersedia untuk tipe file ini</small></p>`;
+        }
+        previewContainer.appendChild(previewEl);
+
+        // Download link
+        const downloadLink = document.createElement("a");
+        downloadLink.href = e.target.result;
+        downloadLink.download = `[${formType}]_${code}_${label}_${file.name}`;
+        downloadLink.textContent = `⬇ Download ${label}`;
+        previewContainer.appendChild(downloadLink);
+
+        resultBox.appendChild(previewContainer);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  if (docCount === 0) {
+    alert("Silakan upload minimal satu dokumen!");
+    return;
+  }
+  
+  // Enable upload button after successful generation
+  const uploadBtn = form.querySelector('.btn-upload-drive');
+  if (uploadBtn && gapi_inited && accessToken) {
+    uploadBtn.disabled = false;
+  }
+}
+
+// Helper functions for QR Code
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('URL berhasil disalin ke clipboard!');
+    }).catch(err => {
+      console.error('Gagal menyalin: ', err);
+      fallbackCopyToClipboard(text);
+    });
+  } else {
+    fallbackCopyToClipboard(text);
+  }
+}
+
+function fallbackCopyToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-999999px";
+  textArea.style.top = "-999999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    alert('URL berhasil disalin ke clipboard!');
+  } catch (err) {
+    console.error('Fallback copy failed: ', err);
+    alert('Gagal menyalin URL');
+  }
+  document.body.removeChild(textArea);
+}
+
+function openUrl(url) {
+  window.open(url, '_blank');
+}
+
+// Download all documents as PDF
+async function downloadAll(btn) {
+  const form = btn.closest("form");
+  const resultBox = form.nextElementSibling;
+  const formType = form.getAttribute('data-form-type');
+  
+  if (!resultBox.innerHTML.trim()) {
+    alert("Generate QR & Preview terlebih dahulu!");
+    return;
+  }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    let yOffset = 20;
+    const pageHeight = 297;
+    const pageWidth = 210;
+    const margin = 20;
+    
+    // Get form data
+    const shipName = form.querySelector('input[type="text"]').value || "KAPAL";
+    const date = form.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+    const time = form.querySelector('input[type="time"]').value || "00:00";
+    const captain = form.querySelectorAll('input[type="text"]')[1].value || "Nahkoda";
+    const gt = form.querySelectorAll('input[type="text"]')[2].value || "-";
+    
+    function checkAndAddPage(neededHeight) {
+      if (yOffset + neededHeight > pageHeight - 35) {
+        pdf.addPage();
+        yOffset = 20;
+        return true;
+      }
+      return false;
+    }
+    
+    // PDF Header
+    pdf.setFontSize(18);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('SANDAR-RATU', pageWidth/2, yOffset, { align: 'center' });
+    yOffset += 8;
+    
+    pdf.setFontSize(12);
+    pdf.text('Sistem Administrasi & Dokumen Kesyahbandaran', pageWidth/2, yOffset, { align: 'center' });
+    yOffset += 5;
+    pdf.text('PPN Palabuhanratu', pageWidth/2, yOffset, { align: 'center' });
+    yOffset += 20;
+    
+    // Form Type
+    pdf.setDrawColor(52, 152, 219);
+    pdf.setFillColor(232, 244, 248);
+    pdf.roundedRect(margin, yOffset, pageWidth - 2*margin, 15, 3, 3, 'FD');
+    
+    yOffset += 10;
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(44, 62, 80);
+    pdf.text('JENIS FORM: ' + formType, pageWidth/2, yOffset, { align: 'center' });
+    yOffset += 15;
+    
+    // Document info
+    pdf.setDrawColor(100);
+    pdf.setFillColor(245, 245, 245);
+    pdf.roundedRect(margin, yOffset, pageWidth - 2*margin, 50, 3, 3, 'FD');
+    
+    yOffset += 10;
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(0);
+    pdf.text('INFORMASI DOKUMEN', margin + 10, yOffset);
+    yOffset += 8;
+    
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text('Nama Kapal: ' + shipName, margin + 10, yOffset);
+    pdf.text('GT: ' + gt, margin + 100, yOffset);
+    yOffset += 6;
+    pdf.text('Tanggal: ' + new Date(date).toLocaleDateString('id-ID'), margin + 10, yOffset);
+    pdf.text('Waktu: ' + time, margin + 100, yOffset);
+    yOffset += 6;
+    pdf.text('Nahkoda: ' + captain, margin + 10, yOffset);
+    yOffset += 6;
+    pdf.text('Petugas: ' + (currentUser ? currentUser.name : 'Unknown'), margin + 10, yOffset);
+    pdf.text('Email: ' + (currentUser ? currentUser.email : 'Unknown'), margin + 100, yOffset);
+    yOffset += 20;
+
+    // QR Code
+    const qrCanvas = resultBox.querySelector('canvas');
+    if (qrCanvas) {
+      checkAndAddPage(70);
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('QR CODE VERIFIKASI DOKUMEN', pageWidth/2, yOffset, { align: 'center' });
+      yOffset += 5;
+      
+      const imgData = qrCanvas.toDataURL('image/png');
+      const qrSize = 50;
+      pdf.addImage(imgData, 'PNG', (pageWidth-qrSize)/2, yOffset, qrSize, qrSize);
+      yOffset += qrSize + 10;
+    }
+
+    // Document list
+    checkAndAddPage(20);
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('DOKUMEN TERLAMPIR:', margin, yOffset);
+    yOffset += 10;
+    
+    let docNumber = 1;
+    const fileInputs = form.querySelectorAll('input[type="file"]');
+    
+    fileInputs.forEach((fileInput) => {
+      if (fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const label = fileInput.parentElement.textContent.split(':')[0];
+        
+        checkAndAddPage(30);
+        
+        pdf.setFontSize(11);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(docNumber + '. ' + label, margin, yOffset);
+        yOffset += 6;
+        
+        pdf.setFontSize(9);
+        pdf.setFont(undefined, 'normal');
+        const fileInfo = file.name + ' | ' + (file.size/1024).toFixed(2) + ' KB';
+        pdf.text(fileInfo, margin + 10, yOffset);
+        yOffset += 4;
+        
+        pdf.setFontSize(8);
+        pdf.setTextColor(41, 128, 185);
+        pdf.text('Jenis Form: ' + formType, margin + 10, yOffset);
+        pdf.setTextColor(0);
+        yOffset += 5;
+        
+        // Document box
+        pdf.setDrawColor(200);
+        pdf.setFillColor(250, 250, 250);
+        pdf.roundedRect(margin + 10, yOffset, pageWidth - 2*margin - 20, 15, 2, 2, 'FD');
+        
+        let fileTypeText = 'File - ' + file.name;
+        if (file.type.includes('pdf')) {
+          fileTypeText = 'Dokumen PDF - ' + file.name;
+        } else if (file.type.includes('image')) {
+          fileTypeText = 'Gambar - ' + file.name;
+        }
+        
+        pdf.text(fileTypeText, margin + 15, yOffset + 10);
+        yOffset += 20;
+        docNumber++;
+      }
+    });
+    
+    // Footer for all pages
+    const totalPages = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(100);
+      
+      const footerY = pageHeight - 15;
+      pdf.text('SANDAR-RATU © 2025', margin, footerY);
+      pdf.text('Halaman ' + i + ' dari ' + totalPages, pageWidth/2, footerY, { align: 'center' });
+      pdf.text('Dicetak: ' + new Date().toLocaleDateString('id-ID'), pageWidth - margin, footerY, { align: 'right' });
+      
+      // Form type and officer in footer
+      pdf.setFontSize(7);
+      pdf.text('Form: ' + formType + ' | Petugas: ' + (currentUser ? currentUser.name : 'Unknown'), pageWidth/2, footerY + 5, { align: 'center' });
+    }
+    
+    // Save PDF
+    const fileName = `[${formType}]_SANDAR_RATU_${shipName.replace(/\s+/g,'_')}_${date.replace(/-/g,'')}.pdf`;
+    pdf.save(fileName);
+    
+    alert(`Dokumen PDF berhasil di-download: ${fileName}\nJenis Form: ${formType}\nJumlah dokumen: ${docNumber-1}\nPetugas: ${currentUser ? currentUser.name : 'Unknown'}`);
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Terjadi error saat membuat PDF. Silakan coba lagi.');
+  }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Disable login button initially
+  const loginBtn = document.getElementById('googleLoginBtn');
+  loginBtn.disabled = true;
+  document.getElementById('loginBtnText').textContent = 'Loading...';
+  
+  // Load Google APIs
+  if (typeof gapi !== 'undefined') {
+    gapiLoaded();
+  } else {
+    console.error('Google API not loaded');
+  }
+  
+  if (typeof google !== 'undefined') {
+    gisLoaded();
+  } else {
+    console.error('Google Identity Services not loaded');
+  }

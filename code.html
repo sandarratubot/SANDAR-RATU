@@ -772,18 +772,17 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa;min-height:100vh;displ
 <script>
 // Configuration
 <script>
-    const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
-    const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
-    const SCOPES = "https://www.googleapis.com/auth/drive.file";
+  const CLIENT_ID = "800620913330-fahu605bu7d8v877pbgaijvp0shrc3cf.apps.googleusercontent.com";
+  const API_KEY = "AIzaSyDvNWYW_BNTF-sftpmff3jWyL9BeP6-qMg";
+  const SCOPES = "https://www.googleapis.com/auth/drive.file";
 
 // WARNING: These API keys are hardcoded. For production, consider using a backend server to handle this securely.
-
-const FOLDER_MAP = {
-      "Petugas-Keberangkatan": "1Ws2ctYHbdUD7Wza2ld4KxO0j7fiFcg3o",
-      "Petugas-Kedatangan": "1BIDQw9AMiY5_Mxt1OBKC1Lce3xzjtfTz",
-      "Nelayan-Keberangkatan": "1bnyimhbu884iAdNX75u_MxtPN2azgAFy",
-      "Nelayan-Kedatangan": "1Yt_-nTkJrZNO7Y2ZlBJIqebnMu0ncE-M"
-  };
+  const FOLDER_MAP = {
+    "Petugas-Keberangkatan": "1Ws2ctYHbdUD7Wza2ld4KxO0j7fiFcg3o",
+    "Petugas-Kedatangan": "1BIDQw9AMiY5_Mxt1OBKC1Lce3xzjtfTz",
+    "Nelayan-Keberangkatan": "1bnyimhbu884iAdNX75u_MxtPN2azgAFy",
+    "Nelayan-Kedatangan": "1Yt_-nTkJrZNO7Y2ZlBJIqebnMu0ncE-M"
+};
 
 // Global variables
 let isGoogleAPIReady = false;

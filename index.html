@@ -288,26 +288,75 @@
             min-height: 80px;
         }
 
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
+        /* File Upload Styles */
+        .upload-section {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .checkbox-item {
+        .upload-section h3 {
+            color: #495057;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            gap: 10px;
         }
 
-        .checkbox-item input[type="checkbox"] {
+        .upload-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .upload-item label {
+            font-weight: 500;
+            color: #495057;
             margin: 0;
-            transform: scale(1.2);
+            flex: 1;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-upload-btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .file-upload-btn:hover {
+            background: #0056b3;
+        }
+
+        .file-status {
+            margin-left: 10px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .file-selected {
+            color: #28a745;
         }
 
         .btn-generate {
@@ -470,38 +519,6 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
-        /* Document selection styles */
-        .doc-selection-header {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 2px solid #dee2e6;
-        }
-
-        .doc-selection-header h4 {
-            color: #495057;
-            margin-bottom: 10px;
-        }
-
-        .select-all-container {
-            margin-bottom: 15px;
-        }
-
-        .select-all-btn {
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .select-all-btn:hover {
-            background: #138496;
-        }
     </style>
 </head>
 <body>
@@ -581,36 +598,36 @@
         "Nelayan-Kedatangan": "1Yt_-nTkJrZNO7Y2ZlBJIqebnMu0ncE-M"
     };
 
-    // Document definitions
-    const DOCUMENT_FORMS = {
+    // Document definitions for uploads
+    const UPLOAD_DOCUMENTS = {
         petugasKeberangkatan: [
-            { id: 'spb', name: 'SPB (Surat Persetujuan Berlayar)', fields: ['noSPB', 'validUntil'] },
-            { id: 'crewList', name: 'Crew List', fields: ['totalCrew', 'crewNames'] },
-            { id: 'perbekalan', name: 'Perbekalan', fields: ['jenisPerbekalan', 'jumlah'] },
-            { id: 'slo', name: 'SLO (Surat Laik Operasi)', fields: ['noSLO', 'berlakuSampai'] },
-            { id: 'pernyataanNakhoda', name: 'Pernyataan Nakhoda', fields: ['pernyataan'] },
-            { id: 'kwitansiTambat', name: 'Kwitansi Tambat Labuh', fields: ['noKwitansi', 'biayaTambat'] },
-            { id: 'permohonanSPB', name: 'Permohonan Penerbitan SPB', fields: ['alasanPermohonan'] },
-            { id: 'daftarABK', name: 'Daftar ABK dari Nahkoda', fields: ['jumlahABK', 'namaABK'] },
-            { id: 'stblkk', name: 'STBLKK', fields: ['noSTBLKK', 'jenisIkan'] },
-            { id: 'fakturBBM', name: 'Faktur BBM (non subsidi)', fields: ['jenisBBM', 'jumlahLiter', 'harga'] }
+            { id: 'spb', name: 'SPB (Surat Persetujuan Berlayar)' },
+            { id: 'crewList', name: 'Crew List' },
+            { id: 'perbekalan', name: 'Perbekalan' },
+            { id: 'slo', name: 'SLO (Surat Laik Operasi)' },
+            { id: 'pernyataanNakhoda', name: 'Pernyataan Nakhoda' },
+            { id: 'kwitansiTambat', name: 'Kwitansi Tambat Labuh' },
+            { id: 'permohonanSPB', name: 'Permohonan Penerbitan SPB' },
+            { id: 'daftarABK', name: 'Daftar ABK dari Nahkoda' },
+            { id: 'stblkk', name: 'STBLKK' },
+            { id: 'fakturBBM', name: 'Faktur BBM (non subsidi)' }
         ],
         petugasKedatangan: [
-            { id: 'stblkk', name: 'STBLKK', fields: ['noSTBLKK', 'jenisIkan', 'jumlahTangkapan'] },
-            { id: 'rekomBongkar', name: 'Rekom Bongkar', fields: ['noRekom', 'lokasiPenurunan'] },
-            { id: 'spbAsal', name: 'SPB Asal', fields: ['noSPBAsal', 'pelabuhan'] }
+            { id: 'stblkk', name: 'STBLKK' },
+            { id: 'rekomBongkar', name: 'Rekom Bongkar' },
+            { id: 'spbAsal', name: 'SPB Asal' }
         ],
         nelayanKeberangkatan: [
-            { id: 'spb', name: 'SPB (Surat Persetujuan Berlayar)', fields: ['noSPB', 'validUntil'] },
-            { id: 'crewList', name: 'Crew List', fields: ['totalCrew', 'crewNames'] },
-            { id: 'perbekalan', name: 'Perbekalan', fields: ['jenisPerbekalan', 'jumlah'] },
-            { id: 'slo', name: 'SLO (Surat Laik Operasi)', fields: ['noSLO', 'berlakuSampai'] },
-            { id: 'pernyataanNakhoda', name: 'Pernyataan Nakhoda', fields: ['pernyataan'] }
+            { id: 'spb', name: 'SPB (Surat Persetujuan Berlayar)' },
+            { id: 'crewList', name: 'Crew List' },
+            { id: 'perbekalan', name: 'Perbekalan' },
+            { id: 'slo', name: 'SLO (Surat Laik Operasi)' },
+            { id: 'pernyataanNakhoda', name: 'Pernyataan Nakhoda' }
         ],
         nelayanKedatangan: [
-            { id: 'stblkk', name: 'STBLKK', fields: ['noSTBLKK', 'jenisIkan', 'jumlahTangkapan'] },
-            { id: 'rekomBongkar', name: 'Rekom Bongkar', fields: ['noRekom', 'lokasiPenurunan'] },
-            { id: 'spbAsal', name: 'SPB Asal', fields: ['noSPBAsal', 'pelabuhan'] }
+            { id: 'stblkk', name: 'STBLKK' },
+            { id: 'rekomBongkar', name: 'Rekom Bongkar' },
+            { id: 'spbAsal', name: 'SPB Asal' }
         ]
     };
 
@@ -618,6 +635,7 @@
     let currentUser = null;
     let currentAccessToken = null;
     let tokenClient = null;
+    let uploadedFiles = {};
 
     function showMessage(element, message, type = 'info') {
         const className = type === 'error' ? 'error-message' :
@@ -639,10 +657,6 @@
         if (!shipName) throw new Error('Nama kapal harus diisi');
         if (!date) throw new Error('Tanggal harus diisi');
         if (!time) throw new Error('Waktu harus diisi');
-        
-        // Check if at least one document is selected
-        const checkedDocs = form.querySelectorAll('input[type="checkbox"]:checked');
-        if (checkedDocs.length === 0) throw new Error('Pilih minimal satu dokumen untuk digenerate');
         
         return true;
     }
@@ -730,340 +744,58 @@
         if (!currentUser) return;
         
         document.getElementById("loginPage").style.display = "none";
-        document.getElementById("dashboard").style.display = "flex";
-        document.body.style.background = "white";
-        
-        document.getElementById('userName').textContent = currentUser.name;
-        document.getElementById('userAvatar').src = currentUser.picture || '';
-        
-        initializePages();
-        showPage('departurePetugas', document.querySelector(".sidebar a"));
-    }
-
-    function updateGoogleDriveStatus(errorMsg = null) {
-        const statusElements = document.querySelectorAll('.google-drive-status');
-        
-        statusElements.forEach(el => {
-            if (errorMsg) {
-                el.className = 'upload-error';
-                el.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMsg}`;
-                disableUploadButtons();
-            } else if (isGAPIReady) {
-                if (currentAccessToken) {
-                    el.className = 'upload-status';
-                    el.innerHTML = '<i class="fas fa-check-circle"></i> Google Drive connected and ready';
-                    enableUploadButtons();
-                } else {
-                    el.className = 'google-drive-status';
-                    el.innerHTML = '<i class="fas fa-info-circle"></i> Click "Upload to Google Drive" to connect to Google Drive';
-                    enableUploadButtons();
-                }
-            } else {
-                el.className = 'google-drive-status';
-                el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to Google Drive...';
-                disableUploadButtons();
-            }
-        });
-    }
-
-    function enableUploadButtons() {
-        document.querySelectorAll('.btn-upload-drive').forEach(btn => {
-            btn.disabled = false;
-        });
-    }
-
-    function disableUploadButtons() {
-        document.querySelectorAll('.btn-upload-drive').forEach(btn => {
-            btn.disabled = true;
-        });
-    }
-
-    async function requestDrivePermission() {
-        if (!tokenClient) {
-            throw new Error('Google API not initialized');
-        }
-
-        return new Promise((resolve, reject) => {
-            const originalCallback = tokenClient.callback;
-            tokenClient.callback = (response) => {
-                tokenClient.callback = originalCallback;
-                if (response.error !== undefined) {
-                    reject(new Error(response.error));
-                } else {
-                    currentAccessToken = response.access_token;
-                    updateGoogleDriveStatus();
-                    resolve(response.access_token);
-                }
-            };
-            tokenClient.requestAccessToken();
-        });
-    }
-
-    async function uploadToDrive(file, folderName) {
-        if (!currentAccessToken) {
-            await requestDrivePermission();
-        }
-
-        const folderId = FOLDER_MAP[folderName];
-        if (!folderId) {
-            throw new Error(`Folder '${folderName}' not found`);
-        }
-
-        const metadata = {
-            name: file.name,
-            parents: [folderId]
-        };
-
-        const form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], {
-            type: 'application/json'
-        }));
-        form.append('file', file);
-
-        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-            method: 'POST',
-            headers: new Headers({
-                'Authorization': `Bearer ${currentAccessToken}`
-            }),
-            body: form
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(`Upload failed: ${response.status} - ${error.error?.message || 'Unknown error'}`);
-        }
-
-        return await response.json();
-    }
-
-    function logout() {
-        currentUser = null;
-        currentAccessToken = null;
-        
-        if (currentAccessToken) {
-            google.accounts.oauth2.revoke(currentAccessToken);
-        }
-
-        document.getElementById("loginPage").style.display = "flex";
         document.getElementById("dashboard").style.display = "none";
         document.body.style.background = "#f8f9fa";
         
         console.log('Logout successful');
     }
 
-    function generateDocumentForm(documents, formType) {
-        let formHtml = '';
-        
-        formHtml += `
-            <div class="doc-selection-header">
-                <h4><i class="fas fa-file-alt"></i> Pilih Dokumen yang akan Digenerate</h4>
-                <div class="select-all-container">
-                    <button type="button" class="select-all-btn" onclick="toggleSelectAll(this, '${formType}')">
-                        Select All
-                    </button>
-                </div>
-                <div class="checkbox-group" id="docGroup${formType}">
+    function generateUploadForm(documents, formType) {
+        let uploadHtml = `
+            <div class="upload-section">
+                <h3><i class="fas fa-upload"></i> Upload Dokumen</h3>
         `;
         
         documents.forEach((doc, index) => {
-            formHtml += `
-                <div class="checkbox-item">
-                    <input type="checkbox" id="${doc.id}_${formType}" name="selectedDocs" value="${doc.id}">
-                    <label for="${doc.id}_${formType}">${doc.name}</label>
+            uploadHtml += `
+                <div class="upload-item">
+                    <label>${doc.name}:</label>
+                    <div style="display: flex; align-items: center;">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="file_${doc.id}_${formType}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleFileUpload('${doc.id}', '${formType}', this)">
+                            <button type="button" class="file-upload-btn" onclick="document.getElementById('file_${doc.id}_${formType}').click()">
+                                Choose File
+                            </button>
+                        </div>
+                        <span class="file-status" id="status_${doc.id}_${formType}">No file chosen</span>
+                    </div>
                 </div>
             `;
         });
         
-        formHtml += `
-                </div>
-            </div>
-        `;
-        
-        return formHtml;
+        uploadHtml += `</div>`;
+        return uploadHtml;
     }
 
-    function generateDocumentFields(documents, formType) {
-        let fieldsHtml = '';
+    function handleFileUpload(docId, formType, input) {
+        const statusElement = document.getElementById(`status_${docId}_${formType}`);
+        const fileKey = `${formType}_${docId}`;
         
-        documents.forEach((doc, index) => {
-            fieldsHtml += `
-                <div class="form-section" id="section_${doc.id}_${formType}" style="display: none;">
-                    <h4><i class="fas fa-file"></i> ${doc.name}</h4>
-            `;
-            
-            doc.fields.forEach(field => {
-                const fieldLabel = getFieldLabel(field);
-                const fieldType = getFieldType(field);
-                
-                if (fieldType === 'textarea') {
-                    fieldsHtml += `
-                        <div class="form-control">
-                            <label for="${field}_${doc.id}_${formType}">${fieldLabel}</label>
-                            <textarea id="${field}_${doc.id}_${formType}" name="${field}_${doc.id}" rows="3"></textarea>
-                        </div>
-                    `;
-                } else {
-                    fieldsHtml += `
-                        <div class="form-control">
-                            <label for="${field}_${doc.id}_${formType}">${fieldLabel}</label>
-                            <input type="${fieldType}" id="${field}_${doc.id}_${formType}" name="${field}_${doc.id}">
-                        </div>
-                    `;
-                }
-            });
-            
-            fieldsHtml += '</div>';
-        });
-        
-        return fieldsHtml;
-    }
-
-    function getFieldLabel(field) {
-        const labels = {
-            'noSPB': 'Nomor SPB',
-            'validUntil': 'Berlaku Sampai',
-            'totalCrew': 'Jumlah Crew',
-            'crewNames': 'Nama-nama Crew',
-            'jenisPerbekalan': 'Jenis Perbekalan',
-            'jumlah': 'Jumlah',
-            'noSLO': 'Nomor SLO',
-            'berlakuSampai': 'Berlaku Sampai',
-            'pernyataan': 'Isi Pernyataan',
-            'noKwitansi': 'Nomor Kwitansi',
-            'biayaTambat': 'Biaya Tambat (Rp)',
-            'alasanPermohonan': 'Alasan Permohonan',
-            'jumlahABK': 'Jumlah ABK',
-            'namaABK': 'Nama-nama ABK',
-            'noSTBLKK': 'Nomor STBLKK',
-            'jenisIkan': 'Jenis Ikan',
-            'jenisBBM': 'Jenis BBM',
-            'jumlahLiter': 'Jumlah (Liter)',
-            'harga': 'Harga Total (Rp)',
-            'jumlahTangkapan': 'Jumlah Tangkapan (Kg)',
-            'noRekom': 'Nomor Rekomendasi',
-            'lokasiPenurunan': 'Lokasi Penurunan',
-            'noSPBAsal': 'Nomor SPB Asal',
-            'pelabuhan': 'Pelabuhan Asal'
-        };
-        return labels[field] || field;
-    }
-
-    function getFieldType(field) {
-        const types = {
-            'validUntil': 'date',
-            'berlakuSampai': 'date',
-            'totalCrew': 'number',
-            'jumlah': 'number',
-            'biayaTambat': 'number',
-            'jumlahABK': 'number',
-            'jumlahLiter': 'number',
-            'harga': 'number',
-            'jumlahTangkapan': 'number',
-            'pernyataan': 'textarea',
-            'alasanPermohonan': 'textarea',
-            'crewNames': 'textarea',
-            'namaABK': 'textarea'
-        };
-        return types[field] || 'text';
-    }
-
-    function toggleSelectAll(button, formType) {
-        const checkboxes = document.querySelectorAll(`#docGroup${formType} input[type="checkbox"]`);
-        const isSelectAll = button.textContent === 'Select All';
-        
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = isSelectAll;
-            toggleDocumentSection(checkbox, formType);
-        });
-        
-        button.textContent = isSelectAll ? 'Deselect All' : 'Select All';
-    }
-
-    function toggleDocumentSection(checkbox, formType) {
-        const docId = checkbox.value;
-        const section = document.getElementById(`section_${docId}_${formType}`);
-        
-        if (section) {
-            section.style.display = checkbox.checked ? 'block' : 'none';
+        if (input.files.length > 0) {
+            const file = input.files[0];
+            uploadedFiles[fileKey] = file;
+            statusElement.textContent = file.name;
+            statusElement.className = 'file-status file-selected';
+        } else {
+            delete uploadedFiles[fileKey];
+            statusElement.textContent = 'No file chosen';
+            statusElement.className = 'file-status';
         }
-    }
-
-    function generatePDF(formData, selectedDocs, formType) {
-        const doc = new jspdf.jsPDF();
-        let yPosition = 20;
-        
-        // Title
-        const titleMap = {
-            'departurePetugas': 'DOKUMEN KEBERANGKATAN PETUGAS',
-            'arrivalPetugas': 'DOKUMEN KEDATANGAN PETUGAS', 
-            'departureNelayan': 'DOKUMEN KEBERANGKATAN NELAYAN',
-            'arrivalNelayan': 'DOKUMEN KEDATANGAN NELAYAN'
-        };
-        
-        doc.setFontSize(16);
-        doc.text(titleMap[formType] || 'DOKUMEN PELAYARAN', 105, yPosition, { align: 'center' });
-        yPosition += 20;
-        
-        // Ship info
-        doc.setFontSize(12);
-        doc.text(`Nama Kapal: ${formData.namaKapal || ''}`, 20, yPosition);
-        yPosition += 10;
-        doc.text(`Nakhoda: ${formData.nakhoda || ''}`, 20, yPosition);
-        yPosition += 10;
-        doc.text(`Tanggal: ${formData.tanggal || ''}`, 20, yPosition);
-        yPosition += 10;
-        doc.text(`Waktu: ${formData.waktu || ''}`, 20, yPosition);
-        yPosition += 15;
-        
-        // Documents
-        selectedDocs.forEach(docId => {
-            const docInfo = getDocumentInfo(docId, formType);
-            if (docInfo) {
-                doc.setFontSize(14);
-                doc.text(docInfo.name, 20, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(10);
-                docInfo.fields.forEach(field => {
-                    const value = formData[`${field}_${docId}`] || '';
-                    doc.text(`${getFieldLabel(field)}: ${value}`, 25, yPosition);
-                    yPosition += 7;
-                });
-                yPosition += 5;
-                
-                if (yPosition > 250) {
-                    doc.addPage();
-                    yPosition = 20;
-                }
-            }
-        });
-        
-        return doc;
-    }
-
-    function getDocumentInfo(docId, formType) {
-        const typeMap = {
-            'departurePetugas': 'petugasKeberangkatan',
-            'arrivalPetugas': 'petugasKedatangan',
-            'departureNelayan': 'nelayanKeberangkatan',
-            'arrivalNelayan': 'nelayanKedatangan'
-        };
-        
-        const documents = DOCUMENT_FORMS[typeMap[formType]];
-        return documents ? documents.find(doc => doc.id === docId) : null;
     }
 
     function setupFormHandler(formId, formType, folderType) {
         const form = document.getElementById(formId);
         const statusEl = document.getElementById(`status${formType}`);
-        
-        // Setup checkbox change handlers
-        const checkboxes = form.querySelectorAll('input[name="selectedDocs"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                toggleDocumentSection(checkbox, formType);
-            });
-        });
         
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1073,7 +805,6 @@
                 showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Processing documents...', 'info');
 
                 const formData = new FormData(form);
-                const selectedDocs = Array.from(formData.getAll('selectedDocs'));
                 
                 // Collect form data
                 const docData = {
@@ -1084,37 +815,56 @@
                     tujuan: formData.get('tujuan'),
                     asal: formData.get('asal')
                 };
+
+                // Check if any files were uploaded
+                const formFiles = Object.keys(uploadedFiles).filter(key => key.startsWith(formType));
                 
-                // Add document-specific fields
-                selectedDocs.forEach(docId => {
-                    const docInfo = getDocumentInfo(docId, formType);
-                    if (docInfo) {
-                        docInfo.fields.forEach(field => {
-                            docData[`${field}_${docId}`] = formData.get(`${field}_${docId}`);
-                        });
-                    }
-                });
+                if (formFiles.length === 0) {
+                    throw new Error('Silakan upload minimal satu dokumen');
+                }
 
-                const doc = generatePDF(docData, selectedDocs, formType);
-                const pdfBlob = doc.output('blob');
-                const fileName = `${titleMap[formType]}_${docData.namaKapal}_${docData.tanggal}.pdf`.replace(/[^a-zA-Z0-9_.-]/g, '_');
-                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-                const downloadUrl = URL.createObjectURL(file);
-                statusEl.innerHTML = `
-                    <div class="success-message">
-                        <i class="fas fa-check-circle"></i> Documents successfully created.
-                        <a href="${downloadUrl}" download="${fileName}" style="margin-left: 10px; color: #2980b9; font-weight: bold;">Download Documents</a>
-                    </div>
-                `;
+                showMessage(statusEl, '<i class="fas fa-check-circle"></i> Documents ready for upload to Google Drive', 'success');
 
                 // Setup upload button
                 const uploadBtn = form.querySelector('.btn-upload-drive');
                 uploadBtn.onclick = async () => {
                     try {
-                        showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Uploading to Google Drive...', 'info');
-                        await uploadToDrive(file, folderType);
-                        showMessage(statusEl, '<i class="fas fa-check-circle"></i> Documents successfully uploaded to Google Drive!', 'success');
+                        showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Uploading files to Google Drive...', 'info');
+                        
+                        let uploadedCount = 0;
+                        const totalFiles = formFiles.length;
+                        
+                        for (const fileKey of formFiles) {
+                            const file = uploadedFiles[fileKey];
+                            const docId = fileKey.replace(`${formType}_`, '');
+                            
+                            // Create filename with ship name and date
+                            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                            const newFileName = `${docData.namaKapal || 'Unknown'}_${docId}_${docData.tanggal || timestamp}.${file.name.split('.').pop()}`;
+                            
+                            const renamedFile = new File([file], newFileName, { type: file.type });
+                            
+                            await uploadToDrive(renamedFile, folderType);
+                            uploadedCount++;
+                            
+                            showMessage(statusEl, `<i class="fas fa-spinner fa-spin"></i> Uploading... (${uploadedCount}/${totalFiles})`, 'info');
+                        }
+                        
+                        showMessage(statusEl, `<i class="fas fa-check-circle"></i> Successfully uploaded ${uploadedCount} documents to Google Drive!`, 'success');
+                        
+                        // Clear uploaded files after successful upload
+                        formFiles.forEach(key => delete uploadedFiles[key]);
+                        
+                        // Reset form
+                        form.reset();
+                        
+                        // Reset file status indicators
+                        const statusElements = form.querySelectorAll('.file-status');
+                        statusElements.forEach(el => {
+                            el.textContent = 'No file chosen';
+                            el.className = 'file-status';
+                        });
+                        
                     } catch (err) {
                         console.error('Upload error:', err);
                         showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Upload failed: ${err.message}`, 'error');
@@ -1131,13 +881,6 @@
     function initializePages() {
         const mainContent = document.getElementById('mainContent');
         
-        const titleMap = {
-            'departurePetugas': 'DOKUMEN KEBERANGKATAN PETUGAS',
-            'arrivalPetugas': 'DOKUMEN KEDATANGAN PETUGAS', 
-            'departureNelayan': 'DOKUMEN KEBERANGKATAN NELAYAN',
-            'arrivalNelayan': 'DOKUMEN KEDATANGAN NELAYAN'
-        };
-        
         mainContent.innerHTML = `
             <!-- Departure Petugas Page -->
             <div id="departurePetugas" class="content-page">
@@ -1145,7 +888,7 @@
                     <h3>Formulir Keberangkatan Petugas</h3>
                 </div>
                 <div class="card">
-                    <h2>Generate Dokumen Keberangkatan</h2>
+                    <h2>Upload Dokumen Keberangkatan</h2>
                     <form id="formDeparturePetugas">
                         <div class="form-row">
                             <div class="form-control">
@@ -1174,11 +917,10 @@
                             </div>
                         </div>
                         
-                        ${generateDocumentForm(DOCUMENT_FORMS.petugasKeberangkatan, 'departurePetugas')}
-                        ${generateDocumentFields(DOCUMENT_FORMS.petugasKeberangkatan, 'departurePetugas')}
+                        ${generateUploadForm(UPLOAD_DOCUMENTS.petugasKeberangkatan, 'departurePetugas')}
                         
                         <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Generate Documents</button>
+                        <button type="submit" class="btn-generate">Prepare Documents</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
                     </form>
                     <div id="statusdeparturePetugas" class="result-container"></div>
@@ -1191,7 +933,7 @@
                     <h3>Formulir Kedatangan Petugas</h3>
                 </div>
                 <div class="card">
-                    <h2>Generate Dokumen Kedatangan</h2>
+                    <h2>Upload Dokumen Kedatangan</h2>
                     <form id="formArrivalPetugas">
                         <div class="form-row">
                             <div class="form-control">
@@ -1220,11 +962,10 @@
                             </div>
                         </div>
                         
-                        ${generateDocumentForm(DOCUMENT_FORMS.petugasKedatangan, 'arrivalPetugas')}
-                        ${generateDocumentFields(DOCUMENT_FORMS.petugasKedatangan, 'arrivalPetugas')}
+                        ${generateUploadForm(UPLOAD_DOCUMENTS.petugasKedatangan, 'arrivalPetugas')}
                         
                         <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Generate Documents</button>
+                        <button type="submit" class="btn-generate">Prepare Documents</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
                     </form>
                     <div id="statusarrivalPetugas" class="result-container"></div>
@@ -1237,7 +978,7 @@
                     <h3>Formulir Keberangkatan Nelayan</h3>
                 </div>
                 <div class="card">
-                    <h2>Generate Dokumen Keberangkatan</h2>
+                    <h2>Upload Dokumen Keberangkatan</h2>
                     <form id="formDepartureNelayan">
                         <div class="form-row">
                             <div class="form-control">
@@ -1266,11 +1007,10 @@
                             </div>
                         </div>
                         
-                        ${generateDocumentForm(DOCUMENT_FORMS.nelayanKeberangkatan, 'departureNelayan')}
-                        ${generateDocumentFields(DOCUMENT_FORMS.nelayanKeberangkatan, 'departureNelayan')}
+                        ${generateUploadForm(UPLOAD_DOCUMENTS.nelayanKeberangkatan, 'departureNelayan')}
                         
                         <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Generate Documents</button>
+                        <button type="submit" class="btn-generate">Prepare Documents</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
                     </form>
                     <div id="statusdepartureNelayan" class="result-container"></div>
@@ -1283,7 +1023,7 @@
                     <h3>Formulir Kedatangan Nelayan</h3>
                 </div>
                 <div class="card">
-                    <h2>Generate Dokumen Kedatangan</h2>
+                    <h2>Upload Dokumen Kedatangan</h2>
                     <form id="formArrivalNelayan">
                         <div class="form-row">
                             <div class="form-control">
@@ -1312,11 +1052,10 @@
                             </div>
                         </div>
                         
-                        ${generateDocumentForm(DOCUMENT_FORMS.nelayanKedatangan, 'arrivalNelayan')}
-                        ${generateDocumentFields(DOCUMENT_FORMS.nelayanKedatangan, 'arrivalNelayan')}
+                        ${generateUploadForm(UPLOAD_DOCUMENTS.nelayanKedatangan, 'arrivalNelayan')}
                         
                         <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Generate Documents</button>
+                        <button type="submit" class="btn-generate">Prepare Documents</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
                     </form>
                     <div id="statusarrivalNelayan" class="result-container"></div>

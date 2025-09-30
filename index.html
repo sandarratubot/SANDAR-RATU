@@ -738,23 +738,39 @@
     function initializePages() {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = `
-            <!-- ===================== PETUGAS – KEBERANGKATAN ===================== -->
             <div id="departurePetugas" class="content-page">
-                <div class="form-type-indicator"><h3>Formulir Keberangkatan Petugas</h3></div>
+                <div class="form-type-indicator">
+                    <h3>Formulir Persetujuan Berlayar</h3>
+                </div>
                 <div class="card">
+                    <h2>Cetak Persetujuan Berlayar</h2>
                     <form id="formDeparturePetugas">
-                        <input type="text" id="namaKapal1" class="form-control" placeholder="Nama Kapal" required>
-                        <input type="text" id="nakhoda1" class="form-control" placeholder="Nama Nahkoda" required>
-                        <input type="text" id="gt1" class="form-control" placeholder="GT / Tonase Kapal" required>
-                        <input type="date" id="tglBertolak1" class="form-control" required>
-                        <h4>Daftar Dokumen Keberangkatan:</h4>
-                        <ol>
-                            <li>SPB</li><li>Crew List</li><li>Perbekalan</li><li>SLO</li>
-                            <li>Pernyataan Nahkoda</li><li>Kwitansi Tambat Labuh</li>
-                            <li>Permohonan Penerbitan SPB</li><li>Daftar ABK dari Nahkoda</li>
-                            <li>STBLKK</li><li>Faktur BBM (non subsidi)</li>
-                        </ol>
-                        <div id="qrcodePetugasDeparture" style="margin:15px 0;"></div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="namaKapal1">Nama Kapal Perikanan</label>
+                                <input type="text" id="namaKapal1" required>
+                            </div>
+                            <div class="form-control">
+                                <label for="nakhoda1">Nakhoda</label>
+                                <input type="text" id="nakhoda1" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="tglBertolak1">Tanggal Bertolak</label>
+                                <input type="date" id="tglBertolak1" required>
+                            </div>
+                            <div class="form-control">
+                                <label for="jamBertolak1">Jam Bertolak</label>
+                                <input type="time" id="jamBertolak1" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="tujuan1">Tujuan</label>
+                                <input type="text" id="tujuan1" required>
+                            </div>
+                        </div>
                         <div class="google-drive-status">Connecting to Google Drive...</div>
                         <button type="submit" class="btn-generate">Create & Print Document</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
@@ -762,21 +778,39 @@
                     <div id="statusDeparturePetugas" class="result-container"></div>
                 </div>
             </div>
-
-            <!-- ===================== PETUGAS – KEDATANGAN ===================== -->
             <div id="arrivalPetugas" class="content-page">
-                <div class="form-type-indicator"><h3>Formulir Kedatangan Petugas</h3></div>
+                <div class="form-type-indicator">
+                    <h3>Formulir Kedatangan Petugas</h3>
+                </div>
                 <div class="card">
+                    <h2>Cetak Laporan Kedatangan</h2>
                     <form id="formArrivalPetugas">
-                        <input type="text" id="namaKapal2" class="form-control" placeholder="Nama Kapal" required>
-                        <input type="text" id="nakhoda2" class="form-control" placeholder="Nama Nahkoda" required>
-                        <input type="text" id="gt2" class="form-control" placeholder="GT / Tonase Kapal" required>
-                        <input type="date" id="tglTiba2" class="form-control" required>
-                        <h4>Daftar Dokumen Kedatangan:</h4>
-                        <ol>
-                            <li>STBLKK</li><li>Rekom Bongkar</li><li>SPB Asal</li>
-                        </ol>
-                        <div id="qrcodePetugasArrival" style="margin:15px 0;"></div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="namaKapal2">Nama Kapal Perikanan</label>
+                                <input type="text" id="namaKapal2" required>
+                            </div>
+                            <div class="form-control">
+                                <label for="nakhoda2">Nakhoda</label>
+                                <input type="text" id="nakhoda2" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="tglTiba2">Tanggal Tiba</label>
+                                <input type="date" id="tglTiba2" required>
+                            </div>
+                            <div class="form-control">
+                                <label for="jamTiba2">Jam Tiba</label>
+                                <input type="time" id="jamTiba2" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="asal2">Asal Keberangkatan</label>
+                                <input type="text" id="asal2" required>
+                            </div>
+                        </div>
                         <div class="google-drive-status">Connecting to Google Drive...</div>
                         <button type="submit" class="btn-generate">Create & Print Document</button>
                         <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
@@ -784,160 +818,147 @@
                     <div id="statusArrivalPetugas" class="result-container"></div>
                 </div>
             </div>
-
-            <!-- ===================== NELAYAN – KEBERANGKATAN ===================== -->
             <div id="departureNelayan" class="content-page">
-                <div class="form-type-indicator"><h3>Formulir Keberangkatan Nelayan</h3></div>
+                <div class="form-type-indicator">
+                    <h3>Formulir Keberangkatan Nelayan</h3>
+                </div>
                 <div class="card">
-                    <form id="formDepartureNelayan">
-                        <input type="text" id="namaKapal3" class="form-control" placeholder="Nama Kapal" required>
-                        <input type="text" id="nakhoda3" class="form-control" placeholder="Nama Nahkoda" required>
-                        <input type="text" id="gt3" class="form-control" placeholder="GT / Tonase Kapal" required>
-                        <input type="date" id="tglBertolak3" class="form-control" required>
-                        <h4>Daftar Dokumen Keberangkatan:</h4>
-                        <ol>
-                            <li>SPB</li><li>Crew List</li><li>Perbekalan</li><li>SLO</li><li>Pernyataan Nahkoda</li>
-                        </ol>
-                        <div id="qrcodeNelayanDeparture" style="margin:15px 0;"></div>
-                        <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Create & Print Document</button>
-                        <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
-                    </form>
-                    <div id="statusDepartureNelayan" class="result-container"></div>
+                    <h2>Cetak Surat Pernyataan</h2>
+                    <p>Formulir ini dapat digunakan oleh nelayan untuk membuat surat pernyataan keberangkatan.</p>
                 </div>
             </div>
-
-            <!-- ===================== NELAYAN – KEDATANGAN ===================== -->
             <div id="arrivalNelayan" class="content-page">
-                <div class="form-type-indicator"><h3>Formulir Kedatangan Nelayan</h3></div>
+                <div class="form-type-indicator">
+                    <h3>Formulir Kedatangan Nelayan</h3>
+                </div>
                 <div class="card">
-                    <form id="formArrivalNelayan">
-                        <input type="text" id="namaKapal4" class="form-control" placeholder="Nama Kapal" required>
-                        <input type="text" id="nakhoda4" class="form-control" placeholder="Nama Nahkoda" required>
-                        <input type="text" id="gt4" class="form-control" placeholder="GT / Tonase Kapal" required>
-                        <input type="date" id="tglTiba4" class="form-control" required>
-                        <h4>Daftar Dokumen Kedatangan:</h4>
-                        <ol>
-                            <li>STBLKK</li><li>Rekom Bongkar</li><li>SPB Asal</li>
-                        </ol>
-                        <div id="qrcodeNelayanArrival" style="margin:15px 0;"></div>
-                        <div class="google-drive-status">Connecting to Google Drive...</div>
-                        <button type="submit" class="btn-generate">Create & Print Document</button>
-                        <button type="button" class="btn-upload-drive" disabled>Upload to Google Drive</button>
-                    </form>
-                    <div id="statusArrivalNelayan" class="result-container"></div>
+                    <h2>Cetak Surat Pernyataan</h2>
+                    <p>Formulir ini dapat digunakan oleh nelayan untuk membuat surat pernyataan kedatangan.</p>
                 </div>
             </div>
         `;
 
-        // Daftar dokumen untuk tiap form
-        const docLists = {
-            'formDeparturePetugas': [
-                "SPB","Crew List","Perbekalan","SLO","Pernyataan Nahkoda",
-                "Kwitansi Tambat Labuh","Permohonan Penerbitan SPB","Daftar ABK dari Nahkoda",
-                "STBLKK","Faktur BBM (non subsidi)"
-            ],
-            'formArrivalPetugas': ["STBLKK","Rekom Bongkar","SPB Asal"],
-            'formDepartureNelayan': ["SPB","Crew List","Perbekalan","SLO","Pernyataan Nahkoda"],
-            'formArrivalNelayan': ["STBLKK","Rekom Bongkar","SPB Asal"]
-        };
+        // Event handler for Departure Petugas form
+        document.getElementById('formDeparturePetugas').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const statusEl = document.getElementById('statusDeparturePetugas');
+            
+            try {
+                validateForm(form);
+                showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Processing document...', 'info');
 
-        // Helper untuk membuat PDF + QRCode
-        async function handleForm(formId, statusId, qrId, folderName, title) {
-            document.getElementById(formId).addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const statusEl = document.getElementById(statusId);
-                try {
-                    const form = e.target;
-                    const namaKapal = form.querySelector('input[placeholder="Nama Kapal"]').value;
-                    const nakhoda = form.querySelector('input[placeholder="Nama Nahkoda"]').value;
-                    const gt = form.querySelector('input[placeholder="GT / Tonase Kapal"]').value;
-                    const tgl = form.querySelector('input[type="date"]').value;
+                const docData = {
+                    namaKapal: form.querySelector('#namaKapal1').value,
+                    nakhoda: form.querySelector('#nakhoda1').value,
+                    tglBertolak: form.querySelector('#tglBertolak1').value,
+                    jamBertolak: form.querySelector('#jamBertolak1').value,
+                    tujuan: form.querySelector('#tujuan1').value
+                };
 
-                    // Buat PDF
-                    const doc = new jspdf.jsPDF();
-                    doc.setFontSize(16);
-                    doc.text(title, 105, 20, { align: 'center' });
-                    doc.setFontSize(12);
-                    doc.text(`Nama Kapal: ${namaKapal}`, 20, 40);
-                    doc.text(`Nahkoda: ${nakhoda}`, 20, 55);
-                    doc.text(`GT / Tonase: ${gt}`, 20, 70);
-                    doc.text(`Tanggal: ${tgl}`, 20, 85);
+                // Generate PDF using jsPDF
+                const doc = new jspdf.jsPDF();
+                doc.setFontSize(16);
+                doc.text('PERSETUJUAN BERLAYAR', 105, 20, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text(`Nama Kapal Perikanan: ${docData.namaKapal}`, 20, 40);
+                doc.text(`Nakhoda: ${docData.nakhoda}`, 20, 55);
+                doc.text(`Tanggal Bertolak: ${docData.tglBertolak}`, 20, 70);
+                doc.text(`Jam Bertolak: ${docData.jamBertolak}`, 20, 85);
+                doc.text(`Tujuan: ${docData.tujuan}`, 20, 100);
+                
+                const pdfBlob = doc.output('blob');
+                const fileName = `Persetujuan_Berlayar_${docData.namaKapal}_${docData.tglBertolak}.pdf`;
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-                    doc.text("Daftar Dokumen:", 20, 105);
-                    let y = 120;
-                    docLists[formId].forEach((item, i) => {
-                        doc.text(`${i+1}. ${item}`, 25, y);
-                        y += 12;
-                    });
+                const downloadUrl = URL.createObjectURL(file);
+                statusEl.innerHTML = `
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i> Document successfully created.
+                        <a href="${downloadUrl}" download="${fileName}" style="margin-left: 10px; color: #2980b9; font-weight: bold;">Download Document</a>
+                    </div>
+                `;
 
-                    // Generate PDF blob & download URL
-                    const pdfBlob = doc.output('blob');
-                    const fileName = `${title.replace(/ /g, "_")}_${namaKapal}_${tgl}.pdf`;
-                    const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-                    const downloadUrl = URL.createObjectURL(file);
+                // Setup upload button
+                const uploadBtn = form.querySelector('.btn-upload-drive');
+                uploadBtn.onclick = async () => {
+                    try {
+                        showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Uploading to Google Drive...', 'info');
+                        await uploadToDrive(file, 'Petugas-Keberangkatan');
+                        showMessage(statusEl, '<i class="fas fa-check-circle"></i> Document successfully uploaded to Google Drive!', 'success');
+                    } catch (err) {
+                        console.error('Upload error:', err);
+                        showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Upload failed: ${err.message}`, 'error');
+                    }
+                };
 
-                    statusEl.innerHTML = `
-                        <div class="success-message">
-                            <i class="fas fa-check-circle"></i> Dokumen berhasil dibuat.
-                            <a href="${downloadUrl}" download="${fileName}" style="margin-left:10px;color:#2980b9;font-weight:bold;">Download</a>
-                        </div>
-                    `;
+            } catch (error) {
+                console.error('Form processing error:', error);
+                showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`, 'error');
+            }
+        });
 
-                    // QR Code ke web
-                    const qrDiv = document.getElementById(qrId);
-                    qrDiv.innerHTML = "";
-                    const qrCode = new QRCode(qrDiv, { text: downloadUrl, width: 128, height: 128 });
+        // Event handler for Arrival Petugas form
+        document.getElementById('formArrivalPetugas').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const statusEl = document.getElementById('statusArrivalPetugas');
+            
+            try {
+                validateForm(form);
+                showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Processing document...', 'info');
 
-                    // Delay sedikit supaya canvas QR code siap
-                    setTimeout(() => {
-                        const canvas = qrDiv.querySelector('canvas');
-                        if (canvas) {
-                            const qrImage = canvas.toDataURL("image/png");
-                            doc.addPage();
-                            doc.setFontSize(14);
-                            doc.text("Scan QR Code untuk akses dokumen:", 20, 30);
-                            doc.addImage(qrImage, "PNG", 60, 50, 90, 90);
+                const docData = {
+                    namaKapal: form.querySelector('#namaKapal2').value,
+                    nakhoda: form.querySelector('#nakhoda2').value,
+                    tglTiba: form.querySelector('#tglTiba2').value,
+                    jamTiba: form.querySelector('#jamTiba2').value,
+                    asal: form.querySelector('#asal2').value
+                };
 
-                            // Update file setelah QR ditambahkan
-                            const finalBlob = doc.output('blob');
-                            const finalFile = new File([finalBlob], fileName, { type: 'application/pdf' });
-                            const finalUrl = URL.createObjectURL(finalFile);
+                // Generate PDF using jsPDF
+                const doc = new jspdf.jsPDF();
+                doc.setFontSize(16);
+                doc.text('LAPORAN KEDATANGAN', 105, 20, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text(`Nama Kapal Perikanan: ${docData.namaKapal}`, 20, 40);
+                doc.text(`Nakhoda: ${docData.nakhoda}`, 20, 55);
+                doc.text(`Tanggal Tiba: ${docData.tglTiba}`, 20, 70);
+                doc.text(`Jam Tiba: ${docData.jamTiba}`, 20, 85);
+                doc.text(`Asal Keberangkatan: ${docData.asal}`, 20, 100);
+                
+                const pdfBlob = doc.output('blob');
+                const fileName = `Laporan_Kedatangan_${docData.namaKapal}_${docData.tglTiba}.pdf`;
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-                            statusEl.innerHTML = `
-                                <div class="success-message">
-                                    <i class="fas fa-check-circle"></i> Dokumen berhasil dibuat.
-                                    <a href="${finalUrl}" download="${fileName}" style="margin-left:10px;color:#2980b9;font-weight:bold;">Download</a>
-                                </div>
-                            `;
+                const downloadUrl = URL.createObjectURL(file);
+                statusEl.innerHTML = `
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i> Document successfully created.
+                        <a href="${downloadUrl}" download="${fileName}" style="margin-left: 10px; color: #2980b9; font-weight: bold;">Download Document</a>
+                    </div>
+                `;
 
-                            // Update upload button dengan file final
-                            const uploadBtn = form.querySelector('.btn-upload-drive');
-                            uploadBtn.onclick = async () => {
-                                try {
-                                    showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Uploading to Google Drive...', 'info');
-                                    await uploadToDrive(finalFile, folderName);
-                                    showMessage(statusEl, '<i class="fas fa-check-circle"></i> Upload berhasil ke Google Drive!', 'success');
-                                } catch (err) {
-                                    showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Upload gagal: ${err.message}`, 'error');
-                                }
-                            };
-                        }
-                    }, 500);
+                // Setup upload button
+                const uploadBtn = form.querySelector('.btn-upload-drive');
+                uploadBtn.onclick = async () => {
+                    try {
+                        showMessage(statusEl, '<i class="fas fa-spinner fa-spin"></i> Uploading to Google Drive...', 'info');
+                        await uploadToDrive(file, 'Petugas-Kedatangan');
+                        showMessage(statusEl, '<i class="fas fa-check-circle"></i> Document successfully uploaded to Google Drive!', 'success');
+                    } catch (err) {
+                        console.error('Upload error:', err);
+                        showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Upload failed: ${err.message}`, 'error');
+                    }
+                };
 
-                } catch (error) {
-                    showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`, 'error');
-                }
-            });
-        }
+            } catch (error) {
+                console.error('Form processing error:', error);
+                showMessage(statusEl, `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`, 'error');
+            }
+        });
 
-        // Binding semua form
-        handleForm('formDeparturePetugas','statusDeparturePetugas','qrcodePetugasDeparture','Petugas-Keberangkatan','Formulir Keberangkatan Petugas');
-        handleForm('formArrivalPetugas','statusArrivalPetugas','qrcodePetugasArrival','Petugas-Kedatangan','Formulir Kedatangan Petugas');
-        handleForm('formDepartureNelayan','statusDepartureNelayan','qrcodeNelayanDeparture','Nelayan-Keberangkatan','Formulir Keberangkatan Nelayan');
-        handleForm('formArrivalNelayan','statusArrivalNelayan','qrcodeNelayanArrival','Nelayan-Kedatangan','Formulir Kedatangan Nelayan');
-
-        // Update status Google Drive
+        // Update Google Drive status for all forms
         updateGoogleDriveStatus();
     }
 
